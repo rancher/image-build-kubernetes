@@ -8,8 +8,8 @@ RUN apt update                                              && \
     rm -rf /var/lib/apt/lists/*
 
 RUN git clone --depth=1 https://github.com/kubernetes/kubernetes.git && \
-    cd kubernetes && \
-    git fetch --all --tags --prune && \
+    cd kubernetes                                                    && \
+    git fetch --all --tags --prune                                   && \
     git checkout tags/v1.18.0 -b v1.18.0
 RUN cd /go/kubernetes && \
     make all
