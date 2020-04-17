@@ -10,7 +10,7 @@ RUN apt update                                              && \
 RUN git clone --depth=1 https://github.com/kubernetes/kubernetes.git && \
     cd kubernetes                                                    && \
     git fetch --all --tags --prune                                   && \
-    git checkout tags/v1.17.0 -b v1.17.0
+    git checkout tags/v1.17.1 -b v1.17.1
 RUN cd /go/kubernetes && \
     make all
 
