@@ -7,9 +7,9 @@ platform:
 
 steps:
 - name: build
-  image: briandowns/rancher-build-base:v0.1.0
+  image: briandowns/rancher-build-base:v0.1.1
   volumes:
-  - name: docker
+  - name: dockersock
     path: /var/run
   commands:
   - sleep 20
@@ -19,9 +19,9 @@ steps:
     - tag
 
 - name: push
-  image: briandowns/rancher-build-base:v0.1.0
+  image: briandowns/rancher-build-base:v0.1.1
   volumes:
-  - name: docker
+  - name: dockersock
     path: /var/run
   commands:
   - TAG=${DRONE_TAG} make image-push
@@ -35,9 +35,9 @@ steps:
     - tag
 
 - name: scan
-  image: briandowns/rancher-build-base:v0.1.0
+  image: briandowns/rancher-build-base:v0.1.1
   volumes:
-  - name: docker
+  - name: dockersock
     path: /var/run
   commands:
   - TAG=${DRONE_TAG} make image-scan
@@ -46,9 +46,9 @@ steps:
     - tag
 
 - name: manifest
-  image: briandowns/rancher-build-base:v0.1.0
+  image: briandowns/rancher-build-base:v0.1.1
   volumes:
-  - name: docker
+  - name: dockersock
     path: /var/run
   commands:
   - TAG=${DRONE_TAG} make image-manifest
