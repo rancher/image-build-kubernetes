@@ -24,6 +24,7 @@ steps:
   - name: dockersock
     path: /var/run
   commands:
+  - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   - TAG=${DRONE_TAG} make image-push
   environment:
     DOCKER_USERNAME:
