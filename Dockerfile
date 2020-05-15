@@ -16,7 +16,8 @@ RUN cd /go/kubernetes                  && \
 	make all
 
 FROM ubi
-RUN microdnf update -y && \ 
+RUN microdnf update -y           && \
+    microdnf install -y iptables && \
 	rm -rf /var/cache/yum
 
 COPY --from=builder /go/kubernetes/_output/bin /usr/local/bin
