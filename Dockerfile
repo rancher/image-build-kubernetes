@@ -13,7 +13,7 @@ RUN git clone --depth=1 https://github.com/kubernetes/kubernetes.git
 RUN cd /go/kubernetes                  && \
     git fetch --all --tags --prune     && \
     git checkout tags/${TAG} -b ${TAG} && \
-	make all
+    make all
 
 FROM ubi
 RUN microdnf update -y           && \
@@ -21,3 +21,4 @@ RUN microdnf update -y           && \
 	rm -rf /var/cache/yum
 
 COPY --from=builder /go/kubernetes/_output/bin /usr/local/bin
+
