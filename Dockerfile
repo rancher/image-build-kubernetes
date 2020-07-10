@@ -4,7 +4,9 @@ ARG GO_IMAGE=briandowns/rancher-build-base:v0.1.1
 FROM ${UBI_IMAGE} as ubi
 
 FROM ${GO_IMAGE} as builder
-ARG TAG="" 
+ARG K8S_TAG=""
+ARG TAG=""
+
 RUN apt update     && \ 
     apt upgrade -y && \ 
     apt install -y ca-certificates git bash rsync
@@ -12,8 +14,8 @@ RUN apt update     && \
 RUN git clone --depth=1 https://github.com/kubernetes/kubernetes.git
 RUN cd /go/kubernetes                  && \
     git fetch --all --tags --prune     && \
-    git checkout tags/${TAG} -b ${TAG} && \
-    make all
+    git checkout tags/${K8S_TAG} -b ${K8S_TAG} && \
+    KUBE_GIT_VERSION=${TAG} make all
 
 FROM ubi
 RUN microdnf update -y           && \
