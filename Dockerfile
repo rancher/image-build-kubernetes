@@ -1,5 +1,5 @@
 ARG UBI_IMAGE=registry.access.redhat.com/ubi7/ubi-minimal:latest
-ARG GO_IMAGE=briandowns/rancher-build-base:v0.1.1
+ARG GO_IMAGE=rancher/build-base:v1.14.2
 
 FROM ${UBI_IMAGE} as ubi
 
@@ -12,15 +12,15 @@ RUN apt update     && \
     apt install -y ca-certificates git bash rsync
 
 RUN git clone --depth=1 https://github.com/kubernetes/kubernetes.git
-RUN cd /go/kubernetes                  && \
-    git fetch --all --tags --prune     && \
+RUN cd /go/kubernetes                          && \
+    git fetch --all --tags --prune             && \
     git checkout tags/${K8S_TAG} -b ${K8S_TAG} && \
     KUBE_GIT_VERSION=${TAG} make all
 
 FROM ubi
 RUN microdnf update -y           && \
     microdnf install -y iptables && \
-	rm -rf /var/cache/yum
+    rm -rf /var/cache/yum
 
 COPY --from=builder /go/kubernetes/_output/bin /usr/local/bin
 
