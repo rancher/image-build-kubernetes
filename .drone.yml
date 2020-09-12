@@ -7,7 +7,7 @@ platform:
 
 steps:
 - name: build
-  image: rancher/build-base:v1.14.2-amd64
+  image: rancher/hardened-build-base:v1.14.2-amd64
   volumes:
   - name: dockersock
     path: /var/run
@@ -19,7 +19,7 @@ steps:
     - tag
 
 - name: push
-  image: rancher/build-base:v1.14.2-amd64
+  image: rancher/hardened-build-base:v1.14.2-amd64
   volumes:
   - name: dockersock
     path: /var/run
@@ -36,7 +36,7 @@ steps:
     - tag
 
 - name: scan
-  image: rancher/build-base:v1.14.2-amd64
+  image: rancher/hardened-build-base:v1.14.2-amd64
   volumes:
   - name: dockersock
     path: /var/run
@@ -47,7 +47,7 @@ steps:
     - tag
 
 - name: manifest
-  image: rancher/build-base:v1.14.2-amd64
+  image: rancher/hardened-build-base:v1.14.2-amd64
   volumes:
   - name: dockersock
     path: /var/run

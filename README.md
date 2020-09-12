@@ -1,4 +1,4 @@
-# rancher/kubernetes
+# rancher/hardened-kubernetes
 
 ## Build
 
