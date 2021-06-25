@@ -7,64 +7,83 @@ platform:
 
 steps:
 - name: build
-  image: rancher/hardened-build-base:v1.14.2-amd64
+  image: rancher/hardened-build-base:v1.16.4b7
   volumes:
-  - name: dockersock
-    path: /var/run
+    - name: docker
+      path: /var/run/docker.sock
   commands:
-  - sleep 20
-  - TAG=${DRONE_TAG} make
+    - make image-build
   when:
     event:
-    - tag
+      - push
+      - pull_request
 
-- name: push
-  image: rancher/hardened-build-base:v1.14.2-amd64
-  volumes:
-  - name: dockersock
-    path: /var/run
-  commands:
-  - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-  - TAG=${DRONE_TAG} make image-push
+- name: docker-build
+  image: plugins/docker
   environment:
-    DOCKER_USERNAME:
-      from_secret: docker_username
-    DOCKER_PASSWORD:
+    TAG: ${DRONE_TAG}
+  settings:
+    purge: false
+    custom_dns: 1.1.1.1
+    tag: ${DRONE_TAG}-linux-amd64
+    password:
       from_secret: docker_password
+    repo: rancher/hardened-kubernetes
+    username:
+      from_secret: docker_username
+    build_args_from_env-args:
+      - TAG
   when:
     event:
-    - tag
+      - tag
+    instance:
+      - drone-publish.rancher.io
+    ref:
+      - refs/head/master
+      - refs/tags/*
 
 - name: scan
-  image: rancher/hardened-build-base:v1.14.2-amd64
+  image: rancher/hardened-build-base:v1.16.4b7
   volumes:
-  - name: dockersock
-    path: /var/run
+    - name: docker
+      path: /var/run/docker.sock
   commands:
-  - TAG=${DRONE_TAG} make image-scan
+    - TAG=${DRONE_TAG} make image-scan
   when:
     event:
-    - tag
+      - tag
+    instance:
+      - drone-publish.rancher.io
+    ref:
+      - refs/head/master
+      - refs/tags/*
 
 - name: manifest
-  image: rancher/hardened-build-base:v1.14.2-amd64
-  volumes:
-  - name: dockersock
-    path: /var/run
-  commands:
-  - TAG=${DRONE_TAG} make image-manifest
+  image: plugins/manifest
+  settings:
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    spec: manifest.tmpl
   when:
     event:
-    - tag
+      - tag
+    instance:
+      - drone-publish.rancher.io
+    ref:
+      - refs/head/master
+      - refs/tags/*
 
 services:
 - name: docker
   image: docker:dind
   privileged: true
   volumes:
-  - name: dockersock
-    path: /var/run
+  - name: docker
+    path: /var/run/docker.sock
 
 volumes:
-  - name: dockersock
-    temp: {}
+  - name: docker
+    host:
+      path: /var/run/docker.sock
