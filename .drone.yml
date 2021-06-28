@@ -31,7 +31,7 @@ steps:
     repo: rancher/hardened-kubernetes
     username:
       from_secret: docker_username
-    build_args_from_env-args:
+    build_args_from_env:
       - TAG
   when:
     event:
