@@ -41,7 +41,7 @@ image-push:
 
 .PHONY: scan
 image-scan:
-	trivy --severity $(SEVERITIES) --no-progress --skip-update --ignore-unfixed $(ORG)/hardened-kubernetes:$(TAG)
+	trivy --severity $(SEVERITIES) --no-progress --skip-update --ignore-unfixed $(ORG)/hardened-kubernetes:$(TAG)-linux-$(ARCH)
 
 .PHONY: image-manifest
 image-manifest:
