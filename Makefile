@@ -8,15 +8,19 @@ ifeq ($(KUBERNETES_VERSION),)
 KUBERNETES_VERSION=v1.21.1
 endif
 
+BUILD_META=-build$(shell date +%Y%m%d)
 ORG ?= rancher
 PKG ?= github.com/kubernetes/kubernetes
 SRC ?= github.com/kubernetes/kubernetes
 TAG ?= ${DRONE_TAG}
 
 ifeq ($(TAG),)
-TAG := v1.21.1
+TAG := v1.21.1$(BUILD_META)
 endif
 
+ifeq (,$(filter %$(BUILD_META),$(TAG)))
+$(error TAG needs to end with build metadata: $(BUILD_META))
+endif
 
 .PHONY: image-build
 image-build:
@@ -25,7 +29,7 @@ image-build:
 		--build-arg ARCH=$(ARCH) \
 		--build-arg PKG=$(PKG) \
 		--build-arg SRC=$(SRC) \
-		--build-arg TAG=$(TAG) \
+		--build-arg TAG=$(TAG:$(BUILD_META)=) \
 		--tag $(ORG)/hardened-kubernetes:$(TAG)-linux-$(ARCH) \
 	.
 
