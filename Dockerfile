@@ -18,10 +18,12 @@ RUN set -x \
 
 FROM build AS build-k8s-codegen
 ARG TAG
-RUN git clone -b ${TAG} --depth=1 https://github.com/kubernetes/kubernetes.git ${GOPATH}/src/kubernetes
-WORKDIR ${GOPATH}/src/kubernetes
+
 COPY ./scripts/semver-parse.sh /semver-parse.sh
 RUN chmod +x /semver-parse.sh
+
+RUN git clone -b $(/semver-parse.sh ${TAG} all) --depth=1 https://github.com/kubernetes/kubernetes.git ${GOPATH}/src/kubernetes
+WORKDIR ${GOPATH}/src/kubernetes
 
 # force code generation
 RUN make WHAT=cmd/kube-apiserver

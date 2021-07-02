@@ -15,7 +15,7 @@ SRC ?= github.com/kubernetes/kubernetes
 TAG ?= ${DRONE_TAG}
 
 ifeq ($(TAG),)
-TAG := v1.21.1$(BUILD_META)
+TAG := v1.21.2$(BUILD_META)
 endif
 
 ifeq (,$(filter %$(BUILD_META),$(TAG)))
@@ -29,7 +29,7 @@ image-build:
 		--build-arg ARCH=$(ARCH) \
 		--build-arg PKG=$(PKG) \
 		--build-arg SRC=$(SRC) \
-		--build-arg TAG=$(TAG:$(BUILD_META)=) \
+		--build-arg TAG=$(TAG) \
 		--tag $(ORG)/hardened-kubernetes:$(TAG)-linux-$(ARCH) \
 	.
 
