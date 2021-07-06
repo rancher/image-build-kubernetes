@@ -15,7 +15,7 @@ SRC ?= github.com/kubernetes/kubernetes
 TAG ?= ${DRONE_TAG}
 
 ifeq ($(TAG),)
-TAG := v1.21.2$(BUILD_META)
+TAG := v1.21.2-rke2dev-$(BUILD_META)
 endif
 
 ifeq (,$(filter %$(BUILD_META),$(TAG)))
