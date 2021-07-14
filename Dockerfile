@@ -58,7 +58,7 @@ RUN chmod -v +x /usr/local/go/bin/go-*.sh
 
 FROM build-k8s-codegen AS build-k8s
 ARG ARCH="amd64"
-ARG K3S_ROOT_VERSION="v0.8.1"
+ARG K3S_ROOT_VERSION="v0.9.1"
 ADD https://github.com/k3s-io/k3s-root/releases/download/${K3S_ROOT_VERSION}/k3s-root-${ARCH}.tar /opt/k3s-root/k3s-root.tar
 RUN tar xvf /opt/k3s-root/k3s-root.tar -C /opt/k3s-root --wildcards --strip-components=2 './bin/aux/*tables*'
 RUN tar xvf /opt/k3s-root/k3s-root.tar -C /opt/k3s-root './bin/ipset'
@@ -77,8 +77,7 @@ RUN kube-proxy --version
 
 FROM ubi AS kubernetes
 RUN microdnf update -y           && \
-    microdnf install -y iptables    \
-    which                           \
+    microdnf install which          \
     conntrack-tools              && \
     rm -rf /var/cache/yum
 
