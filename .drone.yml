@@ -7,43 +7,15 @@ platform:
 
 steps:
 - name: build
-  image: rancher/hardened-build-base:v1.16.4b7
+  image: rancher/hardened-build-base:v1.16.6b7
   volumes:
     - name: docker
       path: /var/run/docker.sock
   commands:
     - make image-build
-  when:
-    event:
-      - push
-      - pull_request
-
-- name: docker-build
-  image: plugins/docker
-  environment:
-    TAG: ${DRONE_TAG}
-  settings:
-    purge: false
-    custom_dns: 1.1.1.1
-    tag: ${DRONE_TAG}-linux-amd64
-    password:
-      from_secret: docker_password
-    repo: rancher/hardened-kubernetes
-    username:
-      from_secret: docker_username
-    build_args_from_env:
-      - TAG
-  when:
-    event:
-      - tag
-    instance:
-      - drone-publish.rancher.io
-    ref:
-      - refs/head/master
-      - refs/tags/*
 
 - name: scan
-  image: rancher/hardened-build-base:v1.16.4b7
+  image: rancher/hardened-build-base:v1.16.6b7
   volumes:
     - name: docker
       path: /var/run/docker.sock
@@ -74,14 +46,6 @@ steps:
     ref:
       - refs/head/master
       - refs/tags/*
-
-services:
-- name: docker
-  image: docker:dind
-  privileged: true
-  volumes:
-  - name: docker
-    path: /var/run/docker.sock
 
 volumes:
   - name: docker
