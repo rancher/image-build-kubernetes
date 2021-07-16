@@ -1,7 +1,0 @@
-image: rancher/hardened-kubernetes:{{#if build.tag}}{{build.tag}}{{else}}{{replace "release/" "" build.branch }}{{/if}}
-manifests:
-  -
-    image: rancher/hardened-kubernetes:{{#if build.tag}}{{build.tag}}{{else}}{{replace "release/" "" build.branch }}{{/if}}-linux-amd64
-    platform:
-      architecture: amd64
-      os: linux
