@@ -30,14 +30,19 @@ steps:
       - refs/head/master
       - refs/tags/*
 
-- name: manifest
-  image: plugins/manifest
-  settings:
-    username:
-      from_secret: docker_username
-    password:
+- name: publish
+  image: rancher/hardened-build-base:v1.16.6b7
+  commands:
+  - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+  - make DRONE_TAG=${DRONE_TAG} image-push image-manifest
+  environment:
+    DOCKER_PASSWORD:
       from_secret: docker_password
-    spec: manifest.tmpl
+    DOCKER_USERNAME:
+      from_secret: docker_username
+  volumes:
+  - name: docker
+    path: /var/run/docker.sock
   when:
     event:
       - tag
