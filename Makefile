@@ -1,18 +1,17 @@
 SEVERITIES = HIGH,CRITICAL
+SHELL := /bin/bash -x
 
 ifeq ($(ARCH),)
 ARCH=$(shell go env GOARCH)
 endif
 
-ifeq ($(KUBERNETES_VERSION),)
-KUBERNETES_VERSION=v1.21.1
-endif
-
-BUILD_META=-build$(shell date +%Y%m%d)
 ORG ?= rancher
 PKG ?= github.com/kubernetes/kubernetes
 SRC ?= github.com/kubernetes/kubernetes
 TAG ?= ${DRONE_TAG}
+
+BUILD_META := -build$(shell date +%Y%m%d)
+GOLANG_VERSION := $(shell if echo $(TAG) | grep -qE '^v1\.(18|19|20)\.'; then echo v1.15.14b5; else echo v1.16.6b7; fi)
 
 ifeq ($(TAG),)
 TAG := v1.21.2-rke2dev-$(BUILD_META)
@@ -30,6 +29,7 @@ image-build:
 		--build-arg PKG=$(PKG) \
 		--build-arg SRC=$(SRC) \
 		--build-arg TAG=$(TAG) \
+		--build-arg GO_IMAGE=rancher/hardened-build-base:$(GOLANG_VERSION) \
 		--tag $(ORG)/hardened-kubernetes:$(TAG)-linux-$(ARCH) \
 	.
 
