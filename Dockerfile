@@ -57,7 +57,11 @@ RUN echo 'go-build-static.sh -gcflags=-trimpath=${GOPATH}/src/kubernetes -mod=ve
 RUN chmod -v +x /usr/local/go/bin/go-*.sh
 
 FROM build-k8s-codegen AS build-k8s
-ARG ARCH="s390x"
+ARG ARCH="amd64"
+ARG K3S_ROOT_VERSION="v0.9.1"
+ADD https://github.com/k3s-io/k3s-root/releases/download/${K3S_ROOT_VERSION}/k3s-root-${ARCH}.tar /opt/k3s-root/k3s-root.tar
+RUN tar xvf /opt/k3s-root/k3s-root.tar -C /opt/k3s-root --wildcards --strip-components=2 './bin/aux/*tables*'
+RUN tar xvf /opt/k3s-root/k3s-root.tar -C /opt/k3s-root './bin/ipset'
 
 RUN go-build-static-k8s.sh -o bin/kube-apiserver           ./cmd/kube-apiserver
 RUN go-build-static-k8s.sh -o bin/kube-controller-manager  ./cmd/kube-controller-manager
@@ -67,13 +71,18 @@ RUN go-build-static-k8s.sh -o bin/kubeadm                  ./cmd/kubeadm
 RUN go-build-static-k8s.sh -o bin/kubectl                  ./cmd/kubectl
 RUN go-build-static-k8s.sh -o bin/kubelet                  ./cmd/kubelet
 RUN go-assert-static.sh bin/*
+RUN if [ "${ARCH}" != "s390x" ]; then \
+      go-assert-boring.sh bin/* ; \
+    fi
 RUN install -s bin/* /usr/local/bin/
 RUN kube-proxy --version
 
 FROM ubi AS kubernetes
 RUN microdnf update -y           && \
     microdnf install which          \
-    conntrack-tools ipset iproute       && \
+    conntrack-tools              && \
     rm -rf /var/cache/yum
 
+COPY --from=build-k8s /opt/k3s-root/aux/ /usr/sbin/
+COPY --from=build-k8s /opt/k3s-root/bin/ /bin/
 COPY --from=build-k8s /usr/local/bin/ /usr/local/bin/
