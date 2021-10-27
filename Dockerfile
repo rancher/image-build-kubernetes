@@ -1,5 +1,5 @@
 ARG UBI_IMAGE=registry.access.redhat.com/ubi7/ubi-minimal:latest
-ARG GO_IMAGE=rancher/hardened-build-base:v1.16.6b7
+ARG GO_IMAGE=rancher/hardened-build-base:v1.16.9b7
 
 FROM ${UBI_IMAGE} as ubi
 FROM ${GO_IMAGE} as build
@@ -71,7 +71,9 @@ RUN go-build-static-k8s.sh -o bin/kubeadm                  ./cmd/kubeadm
 RUN go-build-static-k8s.sh -o bin/kubectl                  ./cmd/kubectl
 RUN go-build-static-k8s.sh -o bin/kubelet                  ./cmd/kubelet
 RUN go-assert-static.sh bin/*
-RUN go-assert-boring.sh bin/*
+RUN if [ "${ARCH}" != "s390x" ]; then \
+      go-assert-boring.sh bin/* ; \
+    fi
 RUN install -s bin/* /usr/local/bin/
 RUN kube-proxy --version
 
