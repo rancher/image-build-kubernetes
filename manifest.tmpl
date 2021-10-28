@@ -1,12 +1,10 @@
 image: rancher/hardened-kubernetes:{{build.tag}}
 manifests:
-  -
-    image: rancher/hardened-kubernetes:{{build.tag}}-amd64
+  - image: rancher/hardened-kubernetes:{{build.tag}}-linux-amd64
     platform:
       architecture: amd64
       os: linux
-  -
-    image: rancher/hardened-kubernetes:{{build.tag}}-s390x
+  - image: rancher/hardened-kubernetes:{{build.tag}}-linux-s390x
     platform:
       architecture: s390x
       os: linux
