@@ -125,5 +125,4 @@ steps:
     - tag
 depends_on:
   - linux-amd64
-  - linux-s390x
 ...
