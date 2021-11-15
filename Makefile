@@ -9,11 +9,7 @@ ORG ?= rancher
 PKG ?= github.com/kubernetes/kubernetes
 SRC ?= github.com/kubernetes/kubernetes
 TAG ?= ${DRONE_TAG}
-K3S_ROOT_VERSION ?= v0.9.1
-
-ifeq ($(ARCH),s390x)
-K3S_ROOT_VERSION = v0.10.0-rc.0
-endif
+K3S_ROOT_VERSION ?= v.0.10.1
 
 BUILD_META := -build$(shell date +%Y%m%d)
 
