@@ -14,10 +14,10 @@ K3S_ROOT_VERSION ?= v0.10.1
 BUILD_META := -build$(shell date +%Y%m%d)
 
 ifeq ($(TAG),)
-TAG := v1.21.3-rke2dev$(BUILD_META)
+TAG := v1.22.5-rke2dev$(BUILD_META)
 endif
 
-GOLANG_VERSION := $(shell if echo $(TAG) | grep -qE '^v1\.(18|19|20)\.'; then echo v1.15.15b5; else echo v1.16.10b7; fi)
+GOLANG_VERSION := $(shell ./scripts/golang-version.sh $(TAG))
 
 ifeq (,$(filter %$(BUILD_META),$(TAG)))
 $(error TAG needs to end with build metadata: $(BUILD_META))
