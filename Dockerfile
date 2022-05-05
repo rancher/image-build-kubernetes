@@ -1,7 +1,7 @@
-ARG BCI_IMAGE=registry.suse.com/bci/bci-base:latest
+ARG UBI_IMAGE=registry.access.redhat.com/ubi7/ubi-minimal:latest
 ARG GO_IMAGE=rancher/hardened-build-base:UNSET_GO_IMAGE_ARG
 
-FROM ${BCI_IMAGE} as bci
+FROM ${UBI_IMAGE} as ubi
 FROM ${GO_IMAGE} as build
 RUN set -x \
     && apk --no-cache add \
@@ -72,15 +72,16 @@ RUN go-build-static-k8s.sh -o bin/kubectl                  ./cmd/kubectl
 RUN go-build-static-k8s.sh -o bin/kubelet                  ./cmd/kubelet
 RUN go-assert-static.sh bin/*
 RUN if [ "${ARCH}" != "s390x" ]; then \
-    go-assert-boring.sh bin/* ; \
+      go-assert-boring.sh bin/* ; \
     fi
 RUN install -s bin/* /usr/local/bin/
 RUN kube-proxy --version
 
-FROM bci AS kubernetes
-RUN zypper update -y && \
-    zypper install -y conntrack-tools && \
-    zypper clean --all
+FROM ubi AS kubernetes
+RUN microdnf update -y           && \
+    microdnf install which          \
+    conntrack-tools              && \
+    rm -rf /var/cache/yum
 
 COPY --from=build-k8s /opt/k3s-root/aux/ /usr/sbin/
 COPY --from=build-k8s /opt/k3s-root/bin/ /bin/
