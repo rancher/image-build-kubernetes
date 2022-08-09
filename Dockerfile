@@ -3,18 +3,11 @@ ARG GO_IMAGE=rancher/hardened-build-base:UNSET_GO_IMAGE_ARG
 
 FROM ${BCI_IMAGE} as bci
 FROM ${GO_IMAGE} as build
-RUN set -x \
-    && apk --no-cache add \
-    bash \
-    curl \
-    file \
-    git \
-    libseccomp-dev \
-    rsync \
-    tar \
-    make \
-    gcc \
-    py-pip
+RUN zypper update -y && \
+    zypper --non-interactive install \
+        libseccomp-devel \
+        gawk && \
+    zypper clean --all
 
 FROM build AS build-k8s-codegen
 ARG TAG
