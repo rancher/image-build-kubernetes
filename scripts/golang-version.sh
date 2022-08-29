@@ -14,5 +14,5 @@ K8S_VERSION=$(./semver-parse.sh $1 all)
 DEPENDENCIES_URL="https://raw.githubusercontent.com/kubernetes/kubernetes/${K8S_VERSION}/build/dependencies.yaml"
 GOLANG_VERSION=$(curl -sL "${DEPENDENCIES_URL}" | yq e '.dependencies[] | select(.name == "golang: upstream version").version' -)
 
-GOBORING_TAG=$(curl -s -H ${BUILD_BASE_REQ_HEADERS} ${BUILD_BASE_RELEASE_URL} | jq -r '[ .[] | select(.tag_name| contains("'"${GOLANG_VERSION}"'")) | .tag_name ] | sort | last'
+GOBORING_TAG=$(curl -s -H ${BUILD_BASE_REQ_HEADERS} ${BUILD_BASE_RELEASE_URL} | jq -r '[ .[] | select(.tag_name|contains("'${GOLANG_VERSION}'")) | .tag_name ] | sort | last')
 echo ${GOBORING_TAG}
