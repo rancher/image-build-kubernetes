@@ -9,6 +9,7 @@ ORG ?= rancher
 PKG ?= github.com/kubernetes/kubernetes
 SRC ?= github.com/kubernetes/kubernetes
 TAG ?= ${DRONE_TAG}
+TOKEN ?= ${GITHUB_TOKEN}
 K3S_ROOT_VERSION ?= v0.10.1
 
 BUILD_META := -build$(shell date +%Y%m%d)
@@ -17,7 +18,7 @@ ifeq ($(TAG),)
 TAG := v1.24.4-rke2dev$(BUILD_META)
 endif
 
-GOLANG_VERSION := $(shell ./scripts/golang-version.sh $(TAG))
+GOLANG_VERSION := $(shell ./scripts/golang-version.sh $(TAG) $(TOKEN))
 
 ifeq (,$(filter %$(BUILD_META),$(TAG)))
 $(error TAG needs to end with build metadata: $(BUILD_META))

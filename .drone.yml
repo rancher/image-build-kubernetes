@@ -11,6 +11,9 @@ steps:
   volumes:
     - name: docker
       path: /var/run/docker.sock
+  environment:
+    GITHUB_TOKEN:
+      from_secret: github_token
   commands:
     - make image-build
 
@@ -70,6 +73,9 @@ steps:
 - name: build
   image: rancher/hardened-build-base:v1.16.12b7
   failure: ignore
+  environment:
+    GITHUB_TOKEN:
+      from_secret: github_token
   volumes:
   - name: docker
     path: /var/run/docker.sock
