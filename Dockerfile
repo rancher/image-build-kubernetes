@@ -27,7 +27,7 @@ WORKDIR ${GOPATH}/src/kubernetes
 
 # force code generation
 RUN make WHAT=cmd/kube-apiserver
-# build statically linked executables
+# build statically linked executables 
 RUN echo "export MAJOR=$(/semver-parse.sh ${TAG} major)" \
     >> /usr/local/go/bin/go-build-static-k8s.sh
 RUN echo "export MINOR=$(/semver-parse.sh ${TAG} minor)" \
