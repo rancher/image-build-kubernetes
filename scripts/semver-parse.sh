@@ -17,13 +17,16 @@ VERSION=$2
 MAJOR=""
 MINOR=""
 PATCH=""
-RKE2=""
+RC=""
+RKE2_PATCH=""
 
-if [[ "${TAG}" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)\-([a-zA-Z0-9]+)\-?([-+].*)?$ ]]; then
+if [[ "${TAG}" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)([-+][a-zA-Z0-9.]+)?([-+]rke2(r[0-9]+|dev)).*$ ]]; then
     MAJOR=${BASH_REMATCH[1]}
     MINOR=${BASH_REMATCH[2]}
     PATCH=${BASH_REMATCH[3]}
-    RKE2=${BASH_REMATCH[4]}
+    RC=${BASH_REMATCH[4]}
+    RKE2_PATCH=${BASH_REMATCH[5]}
+    echo "TAG=${TAG} parsed as MAJOR=${MAJOR} MINOR=${MINOR} PATCH=${PATCH} RC=${RC} RKE2_PATCH=${RKE2_PATCH}" 1>&2
 fi
 
 if [ "${VERSION}" = "minor" ]; then
@@ -33,11 +36,11 @@ elif [ "${VERSION}" = "major" ]; then
 elif [ "${VERSION}" = "patch" ]; then
     echo "${PATCH}"
 elif [ "${VERSION}" = "all" ]; then
-    echo "v${MAJOR}.${MINOR}.${PATCH}"
+    echo "v${MAJOR}.${MINOR}.${PATCH}${RC}"
 elif [ "${VERSION}" = "rke2" ]; then
-    echo "${RKE2}"
+    echo "${RKE2_PATCH}"
 elif [ "${VERSION}" = "k8s" ]; then
-    echo "v${MAJOR}.${MINOR}.${PATCH}+${RKE2}"
+    echo "v${MAJOR}.${MINOR}.${PATCH}${RC}+${RKE2_PATCH}"
 else
     echo "error: unrecognized version"
     exit 2
