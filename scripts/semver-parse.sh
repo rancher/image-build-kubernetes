@@ -20,7 +20,7 @@ PATCH=""
 RC=""
 RKE2_PATCH=""
 
-if [[ "${TAG}" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)([-+][a-zA-Z0-9.]+)?([-+]rke2(r[0-9]+|dev)).*$ ]]; then
+if [[ "${TAG}" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)([-+][a-zA-Z0-9.]+)?[-+](rke2(r[0-9]+|dev)).*$ ]]; then
     MAJOR=${BASH_REMATCH[1]}
     MINOR=${BASH_REMATCH[2]}
     PATCH=${BASH_REMATCH[3]}
