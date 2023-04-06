@@ -7,7 +7,7 @@ platform:
 
 steps:
 - name: build
-  image: rancher/hardened-build-base:v1.16.12b7
+  image: rancher/hardened-build-base:v1.20.3b1
   volumes:
     - name: docker
       path: /var/run/docker.sock
@@ -18,7 +18,7 @@ steps:
     - make image-build
 
 - name: scan
-  image: rancher/hardened-build-base:v1.16.12b7
+  image: rancher/hardened-build-base:v1.20.3b1
   volumes:
     - name: docker
       path: /var/run/docker.sock
@@ -34,7 +34,7 @@ steps:
       - refs/tags/*
 
 - name: publish
-  image: rancher/hardened-build-base:v1.16.12b7
+  image: rancher/hardened-build-base:v1.20.3b1
   commands:
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   - make DRONE_TAG=${DRONE_TAG} image-push
@@ -71,7 +71,7 @@ node:
 
 steps:
 - name: build
-  image: rancher/hardened-build-base:v1.16.12b7
+  image: rancher/hardened-build-base:v1.20.3b1
   failure: ignore
   environment:
     GITHUB_TOKEN:
@@ -83,7 +83,7 @@ steps:
   - make image-build
 
 - name: publish
-  image: rancher/hardened-build-base:v1.16.12b7
+  image: rancher/hardened-build-base:v1.20.3b1
   failure: ignore
   commands:
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
