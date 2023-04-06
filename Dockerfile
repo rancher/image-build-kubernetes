@@ -1,5 +1,5 @@
-ARG BCI_IMAGE=registry.suse.com/bci/bci-base:latest
-ARG GO_IMAGE=rancher/hardened-build-base:UNSET_GO_IMAGE_ARG
+ARG BCI_IMAGE=registry.suse.com/bci/bci-base:15.3.17.20.12
+ARG GO_IMAGE=rancher/hardened-build-base:v1.20.3b1
 
 FROM ${BCI_IMAGE} as bci
 FROM ${GO_IMAGE} as build
@@ -58,7 +58,7 @@ RUN chmod -v +x /usr/local/go/bin/go-*.sh
 
 FROM build-k8s-codegen AS build-k8s
 ARG ARCH="amd64"
-ARG K3S_ROOT_VERSION="v0.9.1"
+ARG K3S_ROOT_VERSION="v0.12.1"
 ADD https://github.com/k3s-io/k3s-root/releases/download/${K3S_ROOT_VERSION}/k3s-root-${ARCH}.tar /opt/k3s-root/k3s-root.tar
 RUN tar xvf /opt/k3s-root/k3s-root.tar -C /opt/k3s-root --wildcards --strip-components=2 './bin/aux/*tables*'
 RUN tar xvf /opt/k3s-root/k3s-root.tar -C /opt/k3s-root './bin/ipset'
