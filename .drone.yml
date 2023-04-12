@@ -72,7 +72,6 @@ node:
 steps:
 - name: build
   image: rancher/hardened-build-base:v1.20.3b1
-  failure: ignore
   environment:
     GITHUB_TOKEN:
       from_secret: github_token
@@ -84,7 +83,6 @@ steps:
 
 - name: publish
   image: rancher/hardened-build-base:v1.20.3b1
-  failure: ignore
   commands:
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   - make DRONE_TAG=${DRONE_TAG} image-push
@@ -125,11 +123,10 @@ steps:
     username:
       from_secret: docker_username
     spec: manifest.tmpl
-    ignore_missing: true
   when:
     event:
     - tag
 depends_on:
   - linux-amd64
   - linux-s390x
-...
+
