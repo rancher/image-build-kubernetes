@@ -79,7 +79,7 @@ RUN kube-proxy --version
 
 FROM bci AS kubernetes
 RUN zypper update -y && \
-    zypper install -y which conntrack-tools
+    zypper install -y which conntrack-tools kmod
 
 COPY --from=build-k8s /opt/k3s-root/aux/ /usr/sbin/
 COPY --from=build-k8s /opt/k3s-root/bin/ /bin/
