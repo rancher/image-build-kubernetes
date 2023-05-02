@@ -59,6 +59,68 @@ volumes:
   - name: docker
     host:
       path: /var/run/docker.sock
+
+---
+kind: pipeline
+name: linux-arm64
+platform:
+  os: linux
+  arch: arm64
+
+steps:
+- name: build
+  image: rancher/hardened-build-base:v1.20.3b1
+  volumes:
+    - name: docker
+      path: /var/run/docker.sock
+  environment:
+    GITHUB_TOKEN:
+      from_secret: github_token
+  commands:
+    - make image-build
+
+- name: scan
+  image: rancher/hardened-build-base:v1.20.3b1
+  volumes:
+    - name: docker
+      path: /var/run/docker.sock
+  commands:
+    - TAG=${DRONE_TAG} make image-scan
+  when:
+    event:
+      - tag
+    instance:
+      - drone-publish.rancher.io
+    ref:
+      - refs/head/master
+      - refs/tags/*
+
+- name: publish
+  image: rancher/hardened-build-base:v1.20.3b1
+  commands:
+  - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+  - make DRONE_TAG=${DRONE_TAG} image-push
+  environment:
+    DOCKER_PASSWORD:
+      from_secret: docker_password
+    DOCKER_USERNAME:
+      from_secret: docker_username
+  volumes:
+  - name: docker
+    path: /var/run/docker.sock
+  when:
+    event:
+      - tag
+    instance:
+      - drone-publish.rancher.io
+    ref:
+      - refs/head/master
+      - refs/tags/*
+
+volumes:
+  - name: docker
+    host:
+      path: /var/run/docker.sock
 ---
 kind: pipeline
 name: linux-s390x
@@ -128,5 +190,6 @@ steps:
     - tag
 depends_on:
   - linux-amd64
+  - linux-arm64
   - linux-s390x
 
