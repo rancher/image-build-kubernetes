@@ -1,12 +1,12 @@
 ARG BCI_IMAGE=registry.suse.com/bci/bci-base
-ARG GO_IMAGE=rancher/hardened-build-base:v1.20.4b10
+ARG GO_IMAGE=rancher/hardened-build-base:v1.20.4b11
 
 FROM ${BCI_IMAGE} as bci
 FROM ${GO_IMAGE} as build
 RUN set -x && \
     apk --no-cache add \
     bash \
-    binutils \
+    binutils-gold \
     libc6-compat \
     curl \
     file \
