@@ -14,7 +14,7 @@ GOLANG_MINOR=$(echo $GOLANG_VERSION | awk -F. '{print $2}')
 
 # goboring is built into Go as of 1.19; tag is 'b1' for all releases
 if [ "$GOLANG_MINOR" -ge "19" ]; then
-    GOBORING_VERSION="v${GOLANG_VERSION}b1"
+    GOBORING_VERSION="v${GOLANG_VERSION}b2"
 else
     GOBORING_VERSION=$(curl -sL  "${GOBORING_RELEASES_URL}" | awk "/${GOLANG_VERSION}b.+ [0-9a-f]+ src / {sub(/^go/, \"v\", \$1); print \$1}")
 fi
