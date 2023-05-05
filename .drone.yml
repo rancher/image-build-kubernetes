@@ -7,7 +7,7 @@ platform:
 
 steps:
 - name: build
-  image: rancher/hardened-build-base:v1.20.3b1
+  image: rancher/hardened-build-base:v1.20.3b8
   volumes:
     - name: docker
       path: /var/run/docker.sock
@@ -18,7 +18,7 @@ steps:
     - make image-build
 
 - name: scan
-  image: rancher/hardened-build-base:v1.20.3b1
+  image: rancher/hardened-build-base:v1.20.3b8
   volumes:
     - name: docker
       path: /var/run/docker.sock
@@ -34,7 +34,7 @@ steps:
       - refs/tags/*
 
 - name: publish
-  image: rancher/hardened-build-base:v1.20.3b1
+  image: rancher/hardened-build-base:v1.20.3b8
   commands:
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   - make DRONE_TAG=${DRONE_TAG} image-push
@@ -69,7 +69,7 @@ platform:
 
 steps:
 - name: build
-  image: rancher/hardened-build-base:v1.20.3b1
+  image: rancher/hardened-build-base:v1.20.3b8
   volumes:
     - name: docker
       path: /var/run/docker.sock
@@ -80,7 +80,7 @@ steps:
     - make image-build
 
 - name: scan
-  image: rancher/hardened-build-base:v1.20.3b1
+  image: rancher/hardened-build-base:v1.20.3b8
   volumes:
     - name: docker
       path: /var/run/docker.sock
@@ -96,7 +96,7 @@ steps:
       - refs/tags/*
 
 - name: publish
-  image: rancher/hardened-build-base:v1.20.3b1
+  image: rancher/hardened-build-base:v1.20.3b8
   commands:
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   - make DRONE_TAG=${DRONE_TAG} image-push
@@ -133,7 +133,7 @@ node:
 
 steps:
 - name: build
-  image: rancher/hardened-build-base:v1.20.3b1
+  image: rancher/hardened-build-base:v1.20.3b8
   environment:
     GITHUB_TOKEN:
       from_secret: github_token
@@ -144,7 +144,7 @@ steps:
   - make image-build
 
 - name: publish
-  image: rancher/hardened-build-base:v1.20.3b1
+  image: rancher/hardened-build-base:v1.20.3b8
   commands:
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   - make DRONE_TAG=${DRONE_TAG} image-push
