@@ -7,6 +7,7 @@ RUN set -x && \
     apk --no-cache add \
     bash \
     binutils \
+    libc6-compat \
     curl \
     file \
     git \
