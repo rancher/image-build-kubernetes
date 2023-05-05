@@ -1,8 +1,14 @@
 SEVERITIES = HIGH,CRITICAL
 SHELL := /bin/bash -x
 
-ifeq ($(ARCH),)
-ARCH=$(shell go env GOARCH)
+UNAME_M = $(shell uname -m)
+ARCH=
+ifeq ($(UNAME_M), x86_64)
+	ARCH=amd64
+else ifeq ($(UNAME_M), aarch64)
+	ARCH=arm64
+else 
+	ARCH=$(UNAME_M)
 endif
 
 ORG ?= rancher
@@ -31,7 +37,7 @@ image-build:
 		--build-arg PKG=$(PKG) \
 		--build-arg SRC=$(SRC) \
 		--build-arg TAG=$(TAG) \
-		--build-arg GO_IMAGE=rancher/hardened-build-base:$(GOLANG_VERSION) \
+		--build-arg GOLANG_VERSION=rancher/hardened-build-base:$(GOLANG_VERSION) \
 		--build-arg K3S_ROOT_VERSION=$(K3S_ROOT_VERSION) \
 		--tag $(ORG)/hardened-kubernetes:$(TAG)-linux-$(ARCH) \
 		.
