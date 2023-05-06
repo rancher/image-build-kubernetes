@@ -1,8 +1,14 @@
 SEVERITIES = HIGH,CRITICAL
 SHELL := /bin/bash -x
 
-ifeq ($(ARCH),)
-ARCH=$(shell go env GOARCH)
+UNAME_M = $(shell uname -m)
+ARCH=
+ifeq ($(UNAME_M), x86_64)
+	ARCH=amd64
+else ifeq ($(UNAME_M), aarch64)
+	ARCH=arm64
+else 
+	ARCH=$(UNAME_M)
 endif
 
 ORG ?= rancher
@@ -39,8 +45,8 @@ image-build:
 .PHONY: all
 all:
 	docker build \
-	--build-arg K8S_TAG=$(shell echo $(TAG) | grep -oP "^v(([0-9]+)\.([0-9]+)\.([0-9]+))") \
-	--build-arg TAG=$(TAG) -t $(ORG)/hardened-kubernetes:$(shell echo $(TAG) | sed -e 's/+/-/g') .
+		--build-arg K8S_TAG=$(shell echo $(TAG) | grep -oP "^v(([0-9]+)\.([0-9]+)\.([0-9]+))") \
+		--build-arg TAG=$(TAG) -t $(ORG)/hardened-kubernetes:$(shell echo $(TAG) | sed -e 's/+/-/g') .
 
 .PHONY: image-push
 image-push:
