@@ -68,7 +68,7 @@ RUN go-build-static-k8s.sh -o bin/kubeadm                 ./cmd/kubeadm
 RUN go-build-static-k8s.sh -o bin/kubectl                 ./cmd/kubectl
 RUN go-build-static-k8s.sh -o bin/kubelet                 ./cmd/kubelet
 RUN go-assert-static.sh bin/*
-RUN if [ "${ARCH}" != "s390x" || "${ARCH}" != "arm64" ]; then \
+RUN if [ "${ARCH}" = "amd64" ]; then \
         go-assert-boring.sh bin/* ; \
     fi
 RUN install -s bin/* /usr/local/bin/
