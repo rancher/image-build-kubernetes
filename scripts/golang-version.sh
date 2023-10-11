@@ -23,7 +23,7 @@ fi
 
 BASE_URL='https://hub.docker.com/v2/repositories/rancher/hardened-build-base/tags'
 NEXT_URL=$BASE_URL
-MAX_PAGE=5
+MAX_PAGE=10
 PAGE=0
 TAG=""
 
