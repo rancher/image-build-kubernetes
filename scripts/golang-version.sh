@@ -31,7 +31,7 @@ while [ -n "${NEXT_URL}" ] && [ $PAGE -lt $MAX_PAGE ]; do
   RESPONSE=$(curl -s "$NEXT_URL")
   NEXT_URL=$(echo "$RESPONSE" | yq -r '.next // ""')
   TAGS=$(echo "$RESPONSE" | yq -r '.results[].name')
-  TAG=$(echo "${TAGS}" | grep "${GOLANG_VERSION}b[0-9+]$" | head -n 1)
+  TAG=$(echo "${TAGS}" | grep "${GO_VERSION}b[0-9+]$" | head -n 1)
   if [ -n "$TAG" ]; then
     break
   fi
@@ -40,7 +40,7 @@ while [ -n "${NEXT_URL}" ] && [ $PAGE -lt $MAX_PAGE ]; do
 done
 
 if [ -z "${TAG}" ]; then
-  echo "No hardened-build-base tag found for Go ${GOLANG_VERSION}"
+  echo "No hardened-build-base tag found for Go ${GO_VERSION}"
   exit 1
 fi
 
