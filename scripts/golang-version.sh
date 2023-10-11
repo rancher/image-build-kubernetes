@@ -7,16 +7,41 @@ cd $(dirname $0)
 which yq > /dev/null || go install github.com/mikefarah/yq/v4@v4.35.2
 
 K8S_VERSION=$(./semver-parse.sh $1 all)
-DEPENDENCIES_URL="https://raw.githubusercontent.com/kubernetes/kubernetes/${K8S_VERSION}/build/dependencies.yaml"
-GOBORING_RELEASES_URL="https://raw.githubusercontent.com/golang/go/dev.boringcrypto/misc/boring/RELEASES"
-GOLANG_VERSION=$(curl -sL "${DEPENDENCIES_URL}" | yq e '.dependencies[] | select(.name == "golang: upstream version").version' -)
-GOLANG_MINOR=$(echo $GOLANG_VERSION | awk -F. '{print $2}')
 
-# goboring is built into Go as of 1.19; tag is 'b1' for all releases
-if [ "$GOLANG_MINOR" -ge "19" ]; then
-    GOBORING_VERSION="v${GOLANG_VERSION}b2"
-else
-    GOBORING_VERSION=$(curl -sL  "${GOBORING_RELEASES_URL}" | awk "/${GOLANG_VERSION}b.+ [0-9a-f]+ src / {sub(/^go/, \"v\", \$1); print \$1}")
+if [ -z "${K8S_VERSION}" ] || [ "${K8S_VERSION}" == "v.." ]; then
+  echo "No Kubernetes version found in tag ${1}"
+  exit 1
 fi
 
-echo ${GOBORING_VERSION}
+GO_VERSION_URL="https://raw.githubusercontent.com/kubernetes/kubernetes/${K8S_VERSION}/.go-version"
+GO_VERSION=$(curl -sL "${GO_VERSION_URL}")
+
+if [ -z "${GO_VERSION}" ]; then
+  echo "No Go version found for Kubernetes ${K8S_VERSION}"
+  exit 1
+fi
+
+BASE_URL='https://hub.docker.com/v2/repositories/rancher/hardened-build-base/tags'
+NEXT_URL=$BASE_URL
+MAX_PAGE=5
+PAGE=0
+TAG=""
+
+while [ -n "${NEXT_URL}" ] && [ $PAGE -lt $MAX_PAGE ]; do
+  RESPONSE=$(curl -s "$NEXT_URL")
+  NEXT_URL=$(echo "$RESPONSE" | yq -r '.next // empty')
+  TAGS=$(echo "$RESPONSE" | yq -r '.results[].name')
+  TAG=$(echo "${TAGS}" | grep "${GOLANG_VERSION}b[0-9+]$" | head -n 1)
+  if [ -n "$TAG" ]; then
+    break
+  fi
+  
+  PAGE=$((PAGE + 1))
+done
+
+if [ -z "${TAG}" ]; then
+  echo "No hardened-build-base tag found for Go ${GOLANG_VERSION}"
+  exit 1
+fi
+
+echo "${TAG}"
