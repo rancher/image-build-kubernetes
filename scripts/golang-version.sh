@@ -16,7 +16,7 @@ fi
 GO_VERSION_URL="https://raw.githubusercontent.com/kubernetes/kubernetes/${K8S_VERSION}/.go-version"
 GO_VERSION=$(curl -sL "${GO_VERSION_URL}")
 
-if [ -z "${GO_VERSION}" ]; then
+if [[ "${GO_VERSION}" != "1."* ]]; then
   echo "No Go version found for Kubernetes ${K8S_VERSION}"
   exit 1
 fi
