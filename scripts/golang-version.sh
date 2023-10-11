@@ -29,7 +29,7 @@ TAG=""
 
 while [ -n "${NEXT_URL}" ] && [ $PAGE -lt $MAX_PAGE ]; do
   RESPONSE=$(curl -s "$NEXT_URL")
-  NEXT_URL=$(echo "$RESPONSE" | yq -r '.next // empty')
+  NEXT_URL=$(echo "$RESPONSE" | yq -r '.next // ""')
   TAGS=$(echo "$RESPONSE" | yq -r '.results[].name')
   TAG=$(echo "${TAGS}" | grep "${GOLANG_VERSION}b[0-9+]$" | head -n 1)
   if [ -n "$TAG" ]; then
