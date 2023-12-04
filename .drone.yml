@@ -123,54 +123,6 @@ volumes:
       path: /var/run/docker.sock
 ---
 kind: pipeline
-name: linux-s390x
-platform:
-  os: linux
-  arch: amd64
-
-node:
-  arch: s390x
-
-steps:
-- name: build
-  image: rancher/hardened-build-base:v1.20.7b3
-  environment:
-    GITHUB_TOKEN:
-      from_secret: github_token
-  volumes:
-  - name: docker
-    path: /var/run/docker.sock
-  commands:
-  - make image-build
-
-- name: publish
-  image: rancher/hardened-build-base:v1.20.7b3
-  commands:
-  - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-  - make DRONE_TAG=${DRONE_TAG} image-push
-  environment:
-    DOCKER_PASSWORD:
-      from_secret: docker_password
-    DOCKER_USERNAME:
-      from_secret: docker_username
-  volumes:
-    - name: docker
-      path: /var/run/docker.sock
-  when:
-    event:
-    - tag
-    instance:
-    - drone-publish.rancher.io
-    ref:
-    - refs/head/master
-    - refs/tags/*
-
-volumes:
-- name: docker
-  host:
-    path: /var/run/docker.sock
----
-kind: pipeline
 type: docker
 name: manifest
 platform:
@@ -192,5 +144,3 @@ steps:
 depends_on:
   - linux-amd64
   - linux-arm64
-  - linux-s390x
-
