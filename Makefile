@@ -17,17 +17,12 @@ SRC ?= github.com/kubernetes/kubernetes
 TAG ?= ${DRONE_TAG}
 K3S_ROOT_VERSION ?= v0.13.0
 
-BUILD_META := -build$(shell date +%Y%m%d)
 
 ifeq ($(TAG),)
-TAG := v1.26.3-rke2dev$(BUILD_META)
+TAG := v1.26.3-1
 endif
 
 GOLANG_VERSION := $(shell ./scripts/golang-version.sh $(TAG))
-
-ifeq (,$(filter %$(BUILD_META),$(TAG)))
-$(error TAG needs to end with build metadata: $(BUILD_META))
-endif
 
 .PHONY: image-build
 image-build:
