@@ -19,7 +19,7 @@ K3S_ROOT_VERSION ?= v0.13.0
 
 
 ifeq ($(TAG),)
-TAG := v1.29.0-1
+TAG := v1.29.0-rke2dev1
 endif
 
 GOLANG_VERSION := $(shell ./scripts/golang-version.sh $(TAG))
