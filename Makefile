@@ -14,7 +14,6 @@ endif
 ORG ?= rancher
 PKG ?= github.com/kubernetes/kubernetes
 SRC ?= github.com/kubernetes/kubernetes
-TAG ?= ${DRONE_TAG}
 K3S_ROOT_VERSION ?= v0.13.0
 
 BUILD_META := -build$(shell date +%Y%m%d)
@@ -26,7 +25,7 @@ endif
 GOLANG_VERSION := $(shell ./scripts/golang-version.sh $(TAG))
 
 ifeq (,$(filter %$(BUILD_META),$(TAG)))
-$(error TAG needs to end with build metadata: $(BUILD_META))
+$(error TAG $(TAG) needs to end with build metadata: $(BUILD_META))
 endif
 
 .PHONY: image-build
@@ -63,3 +62,14 @@ image-manifest:
 		$(ORG)/hardened-kubernetes:$(TAG)-linux-$(ARCH)
 	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest push \
 		$(ORG)/hardened-kubernetes:$(TAG)
+
+PHONY: log
+log:
+	@echo "ARCH=$(ARCH)"
+	@echo "TAG=$(TAG)"
+	@echo "ORG=$(ORG)"
+	@echo "PKG=$(PKG)"
+	@echo "SRC=$(SRC)"
+	@echo "BUILD_META=$(BUILD_META)"
+	@echo "K3S_ROOT_VERSION=$(K3S_ROOT_VERSION)"
+	@echo "UNAME_M=$(UNAME_M)"
