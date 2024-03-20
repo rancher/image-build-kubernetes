@@ -27,6 +27,8 @@ jobs:
         push: false
         tags: rancher/hardened-kubernetes:${{ env.TAG }}-amd64
         file: Dockerfile
+        build-args: |
+          TAG=${{ env.TAG }}
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@0.18.0
@@ -68,3 +70,5 @@ jobs:
         file: Dockerfile
         outputs: type=docker
         platforms: linux/arm64
+        build-args: |
+          TAG=${{ env.TAG }}
