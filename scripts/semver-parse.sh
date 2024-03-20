@@ -26,7 +26,7 @@ if [[ "${TAG}" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)([-+][a-zA-Z0-9.]+)?[-+](rke2(r[
     PATCH=${BASH_REMATCH[3]}
     RC=${BASH_REMATCH[4]}
     RKE2_PATCH=${BASH_REMATCH[5]}
-    echo "TAG=${TAG} parsed as MAJOR=${MAJOR} MINOR=${MINOR} PATCH=${PATCH} RC=${RC} RKE2_PATCH=${RKE2_PATCH}" 1>&2
+    #echo "TAG=${TAG} parsed as MAJOR=${MAJOR} MINOR=${MINOR} PATCH=${PATCH} RC=${RC} RKE2_PATCH=${RKE2_PATCH}" 1>&2
 fi
 
 if [ "${VERSION}" = "minor" ]; then
