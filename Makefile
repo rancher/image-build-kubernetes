@@ -55,14 +55,6 @@ image-push:
 image-scan:
 	trivy image --severity $(SEVERITIES) --no-progress --skip-db-update --ignore-unfixed $(ORG)/hardened-kubernetes:$(TAG)-linux-$(ARCH)
 
-.PHONY: image-manifest
-image-manifest:
-	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest create --amend \
-		$(ORG)/hardened-kubernetes:$(TAG) \
-		$(ORG)/hardened-kubernetes:$(TAG)-linux-$(ARCH)
-	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest push \
-		$(ORG)/hardened-kubernetes:$(TAG)
-
 PHONY: log
 log:
 	@echo "ARCH=$(ARCH)"
