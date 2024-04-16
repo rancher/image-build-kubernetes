@@ -26,7 +26,8 @@ RUN set -x && \
     gcc \
     py-pip \
     musl-dev \
-    lld 
+    lld \
+    clang
 
 FROM --platform=$BUILDPLATFORM base-builder AS build-k8s-codegen
 ARG TAG
