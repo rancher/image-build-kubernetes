@@ -10,7 +10,7 @@ FROM --platform=$BUILDPLATFORM rancher/mirrored-tonistiigi-xx:1.3.0 as xx
 FROM ${BCI_BASE_IMAGE} as bci-base
 FROM --platform=$BUILDPLATFORM ${GO_IMAGE} as base-builder
 COPY --from=xx / /
-RUN apk add file make git clang lld
+RUN apk add file make git clang lld tar
 ARG TARGETPLATFORM
 RUN set -x && \
     xx-apk --no-cache add \
@@ -22,7 +22,6 @@ RUN set -x && \
     git \
     libseccomp-dev \
     rsync \
-    tar \
     make \
     gcc \
     py-pip
