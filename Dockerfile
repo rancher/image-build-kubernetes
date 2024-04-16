@@ -24,7 +24,9 @@ RUN set -x && \
     rsync \
     make \
     gcc \
-    py-pip
+    py-pip \
+    musl-dev \
+    lld 
 
 FROM --platform=$BUILDPLATFORM base-builder AS build-k8s-codegen
 ARG TAG
@@ -35,7 +37,7 @@ RUN chmod +x /semver-parse.sh
 RUN echo $(/semver-parse.sh ${TAG} all)
 RUN git clone -b $(/semver-parse.sh ${TAG} all) --depth=1 -- https://github.com/kubernetes/kubernetes.git ${GOPATH}/src/kubernetes
 WORKDIR ${GOPATH}/src/kubernetes
-ARG TARGETPLATFORM
+
 # force code generation
 RUN make WHAT=cmd/kube-apiserver
 # build statically linked executables 
