@@ -20,7 +20,7 @@ K3S_ROOT_VERSION ?= v0.13.0
 BUILD_META := -build$(shell date +%Y%m%d)
 
 ifeq ($(TAG),)
-TAG := v1.26.3-rke2dev$(BUILD_META)
+TAG := v1.29.3-rke2dev$(BUILD_META)
 endif
 
 GOLANG_VERSION := $(shell ./scripts/golang-version.sh $(TAG))
