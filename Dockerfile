@@ -93,7 +93,7 @@ FROM bci-base AS kernel-tools
 FROM ${GO_IMAGE} as strip_binary
 #strip needs to run on TARGETPLATFORM, not BUILDPLATFORM
 COPY --from=build-k8s /usr/local/bin/ /kubernetes/
-RUN strip /kubernetes/*
+RUN strip /kubernetes/kube*
 
 FROM bci-base AS kernel-tools
 RUN zypper update -y && \
