@@ -71,13 +71,13 @@ RUN tar xvf /opt/k3s-root/k3s-root.tar -C /opt/k3s-root './bin/ipset'
 
 # cross-compilation setup
 ARG TARGETPLATFORM
-RUN xx-go --wrap && go-build-static-k8s.sh -o bin/kube-apiserver          ./cmd/kube-apiserver
-RUN xx-go --wrap && go-build-static-k8s.sh -o bin/kube-controller-manager ./cmd/kube-controller-manager
-RUN xx-go --wrap && go-build-static-k8s.sh -o bin/kube-scheduler          ./cmd/kube-scheduler
-RUN xx-go --wrap && go-build-static-k8s.sh -o bin/kube-proxy              ./cmd/kube-proxy
-RUN xx-go --wrap && go-build-static-k8s.sh -o bin/kubeadm                 ./cmd/kubeadm
-RUN xx-go --wrap && go-build-static-k8s.sh -o bin/kubectl                 ./cmd/kubectl
-RUN xx-go --wrap && go-build-static-k8s.sh -o bin/kubelet                 ./cmd/kubelet
+RUN xx-go --wrap && GOARCH=${ARCH} go-build-static-k8s.sh -o bin/kube-apiserver          ./cmd/kube-apiserver
+RUN xx-go --wrap && GOARCH=${ARCH} go-build-static-k8s.sh -o bin/kube-controller-manager ./cmd/kube-controller-manager
+RUN xx-go --wrap && GOARCH=${ARCH} go-build-static-k8s.sh -o bin/kube-scheduler          ./cmd/kube-scheduler
+RUN xx-go --wrap && GOARCH=${ARCH} go-build-static-k8s.sh -o bin/kube-proxy              ./cmd/kube-proxy
+RUN xx-go --wrap && GOARCH=${ARCH} go-build-static-k8s.sh -o bin/kubeadm                 ./cmd/kubeadm
+RUN xx-go --wrap && GOARCH=${ARCH} go-build-static-k8s.sh -o bin/kubectl                 ./cmd/kubectl
+RUN xx-go --wrap && GOARCH=${ARCH} go-build-static-k8s.sh -o bin/kubelet                 ./cmd/kubelet
 RUN go-assert-static.sh bin/*
 RUN xx-verify --static bin/*
 RUN if [ "${ARCH}" = "amd64" ]; then \
