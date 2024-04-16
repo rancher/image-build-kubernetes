@@ -27,7 +27,8 @@ RUN set -x && \
     py-pip \
     musl-dev \
     lld \
-    clang
+    clang \
+    glibc
 
 FROM --platform=$BUILDPLATFORM base-builder AS build-k8s-codegen
 ARG TAG
@@ -107,4 +108,4 @@ COPY --from=kernel-tools /usr/sbin/conntrack /usr/sbin/conntrack
 COPY --from=kernel-tools /usr/sbin/modprobe /usr/sbin/modprobe
 COPY --from=build-k8s /opt/k3s-root/aux/ /usr/sbin/
 COPY --from=build-k8s /opt/k3s-root/bin/ /bin/
-COPY --from=strip_binary /kubernetes/ /usr/local/bin/
+COPY --from=strip_binary /kubernetes/kube* /usr/local/bin/
