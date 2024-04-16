@@ -107,4 +107,4 @@ COPY --from=kernel-tools /usr/sbin/conntrack /usr/sbin/conntrack
 COPY --from=kernel-tools /usr/sbin/modprobe /usr/sbin/modprobe
 COPY --from=build-k8s /opt/k3s-root/aux/ /usr/sbin/
 COPY --from=build-k8s /opt/k3s-root/bin/ /bin/
-COPY --from=build-k8s /kubernetes/ /usr/local/bin/
+COPY --from=strip_binary /kubernetes/ /usr/local/bin/
