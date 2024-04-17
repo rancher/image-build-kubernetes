@@ -13,7 +13,7 @@ COPY --from=xx / /
 RUN apk add file make git clang lld tar
 ARG TARGETPLATFORM
 RUN set -x && \
-    xx-apk --no-cache add \
+    xx-apk --no-cache add --update \
     bash \
     binutils-gold \
     libc6-compat \
@@ -24,11 +24,11 @@ RUN set -x && \
     rsync \
     make \
     gcc \
+    g++ \
     py-pip \
     musl-dev \
     lld \
-    clang \
-    glibc
+    clang
 
 FROM --platform=$BUILDPLATFORM base-builder AS build-k8s-codegen
 ARG TAG
