@@ -1,6 +1,6 @@
 ARG BCI_BASE_IMAGE=registry.suse.com/bci/bci-base:15.5
 ARG BCI_BUSYBOX_IMAGE=registry.suse.com/bci/bci-busybox:15.5
-ARG GO_IMAGE=rancher/hardened-build-base:v1.21.5b2
+ARG GO_IMAGE=rancher/hardened-build-base:v1.22.3b1
 
 FROM ${BCI_BASE_IMAGE} as bci-base
 FROM ${BCI_BUSYBOX_IMAGE} as bci-busybox

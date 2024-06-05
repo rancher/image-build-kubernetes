@@ -1,11 +1,11 @@
 name: Push Image
-run-name: Release ${{ github.event.release.tag_name }}
+run-name: Release ${{ ithub.ref_name }}
 on:
   release:
-    types: [released]
+    types: [published]
 
-permissions:
-  contents: read
+env:
+  GITHUB_ACTION_TAG: ${{ github.ref_name }}
 
 jobs:
   push-multiarch:
@@ -16,6 +16,11 @@ jobs:
     steps:
     - name: Check out code
       uses: actions/checkout@v4
+
+    - name: Set the TAG value
+      id: get-TAG
+      run: |
+        echo "$(make -s log | grep TAG)" >> "$GITHUB_ENV"
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
@@ -33,8 +38,8 @@ jobs:
     - name: Login to Container Registry
       uses: docker/login-action@v3
       with:
-        username: ${{ env.DOCKER_USERNAME }}
-        password: ${{ env.DOCKER_PASSWORD }}
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Go image tag
       run: |
@@ -47,9 +52,9 @@ jobs:
       with:
         context: .
         push: true
-        tags: rancher/hardened-kubernetes:${{ github.event.release.tag_name }}
+        tags: husseingalal/hardened-kubernetes:${{ github.event.release.tag_name }}
         file: Dockerfile
         platforms: linux/amd64,linux/arm64
         build-args: |
           GO_IMAGE=${{ env.GO_IMAGE }}
-          TAG=${{ github.event.release.tag_name }}
+          TAG=${{ env.TAG }}
