@@ -1,5 +1,5 @@
 name: Push Image
-run-name: Release ${{ ithub.ref_name }}
+run-name: Release ${{ github.ref_name }}
 on:
   release:
     types: [published]
@@ -17,10 +17,11 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v4
 
-    - name: Set the TAG value
-      id: get-TAG
+    - name: get the build-args values
+      id: get-build-args
       run: |
         echo "$(make -s log | grep TAG)" >> "$GITHUB_ENV"
+        echo "$(make -s log | grep GOLANG_VERSION)" >> "$GITHUB_ENV"
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
@@ -38,15 +39,9 @@ jobs:
     - name: Login to Container Registry
       uses: docker/login-action@v3
       with:
-        username: ${{ env.DOCKER_USERNAME }}
-        password: ${{ env.DOCKER_PASSWORD }}
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Go image tag
-      run: |
-        TAG=${{ github.event.release.tag_name }}
-        GO_IMAGE="rancher/hardened-build-base:$(./scripts/golang-version.sh $TAG)"
-        echo "GO_IMAGE=${GO_IMAGE}" | tee -a $GITHUB_ENV
-  
     - name: Build container image
       uses: docker/build-push-action@v5
       with:
@@ -56,5 +51,5 @@ jobs:
         file: Dockerfile
         platforms: linux/amd64,linux/arm64
         build-args: |
-          GO_IMAGE=${{ env.GO_IMAGE }}
           TAG=${{ env.TAG }}
+          GO_IMAGE="rancher/hardened-build-base:${{ env.GOLANG_VERSION }}"

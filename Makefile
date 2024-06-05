@@ -1,5 +1,4 @@
 SEVERITIES = HIGH,CRITICAL
-SHELL := /bin/bash -x
 
 UNAME_M = $(shell uname -m)
 ARCH=
@@ -66,3 +65,4 @@ log:
 	@echo "BUILD_META=$(BUILD_META)"
 	@echo "K3S_ROOT_VERSION=$(K3S_ROOT_VERSION)"
 	@echo "UNAME_M=$(UNAME_M)"
+	@echo "GOLANG_VERSION=$(GOLANG_VERSION)"
