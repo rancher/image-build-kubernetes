@@ -52,4 +52,4 @@ jobs:
         platforms: linux/amd64,linux/arm64
         build-args: |
           TAG=${{ env.TAG }}
-          GO_IMAGE="rancher/hardened-build-base:${{ env.GOLANG_VERSION }}"
+          GO_IMAGE=rancher/hardened-build-base:${{ env.GOLANG_VERSION }}
