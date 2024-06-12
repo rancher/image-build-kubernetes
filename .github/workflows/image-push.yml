@@ -36,6 +36,12 @@ jobs:
         username: ${{ env.DOCKER_USERNAME }}
         password: ${{ env.DOCKER_PASSWORD }}
 
+    - name: Go image tag
+      run: |
+        TAG=${{ github.event.release.tag_name }}
+        GO_IMAGE="rancher/hardened-build-base:$(./scripts/golang-version.sh $TAG)"
+        echo "GO_IMAGE=${GO_IMAGE}" | tee -a $GITHUB_ENV
+  
     - name: Build container image
       uses: docker/build-push-action@v5
       with:
@@ -44,3 +50,6 @@ jobs:
         tags: rancher/hardened-kubernetes:${{ github.event.release.tag_name }}
         file: Dockerfile
         platforms: linux/amd64,linux/arm64
+        build-args: |
+          GO_IMAGE=${{ env.GO_IMAGE }}
+          TAG=${{ github.event.release.tag_name }}
