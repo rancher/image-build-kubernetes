@@ -1,3 +1,5 @@
+name: Push Image
+run-name: Release ${{ github.event.release.tag_name }}
 on:
   release:
     types: [released]
