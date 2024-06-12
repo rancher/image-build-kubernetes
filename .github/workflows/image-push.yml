@@ -9,6 +9,9 @@ permissions:
 
 jobs:
   push-multiarch:
+    permissions:
+      contents: read
+      id-token: write
     runs-on: ubuntu-latest
     steps:
     - name: Check out code
