@@ -1,14 +1,6 @@
 SEVERITIES = HIGH,CRITICAL
 
 UNAME_M = $(shell uname -m)
-ARCH=
-ifeq ($(UNAME_M), x86_64)
-	ARCH=amd64
-else ifeq ($(UNAME_M), aarch64)
-	ARCH=arm64
-else 
-	ARCH=$(UNAME_M)
-endif
 
 ORG ?= rancher
 PKG ?= github.com/kubernetes/kubernetes
@@ -32,7 +24,6 @@ endif
 image-build:
 	docker build \
 		--pull \
-		--build-arg ARCH=$(ARCH) \
 		--build-arg PKG=$(PKG) \
 		--build-arg SRC=$(SRC) \
 		--build-arg TAG=$(TAG) \
@@ -57,7 +48,6 @@ image-scan:
 
 PHONY: log
 log:
-	@echo "ARCH=$(ARCH)"
 	@echo "TAG=$(TAG)"
 	@echo "ORG=$(ORG)"
 	@echo "PKG=$(PKG)"
