@@ -1,6 +1,6 @@
 ARG BCI_BASE_IMAGE=registry.suse.com/bci/bci-base:15.5
 ARG BCI_BUSYBOX_IMAGE=registry.suse.com/bci/bci-busybox:15.5
-ARG GO_IMAGE=rancher/hardened-build-base:v1.21.5b2
+ARG GO_IMAGE=rancher/hardened-build-base:v1.22.3b1
 
 FROM ${BCI_BASE_IMAGE} as bci-base
 FROM ${BCI_BUSYBOX_IMAGE} as bci-busybox
@@ -57,9 +57,9 @@ RUN echo 'go-build-static.sh -gcflags=-trimpath=${GOPATH}/src/kubernetes -mod=ve
 RUN chmod -v +x /usr/local/go/bin/go-*.sh
 
 FROM build-k8s-codegen AS build-k8s
-ARG ARCH="amd64"
+ARG TARGETARCH
 ARG K3S_ROOT_VERSION="v0.13.0"
-ADD https://github.com/k3s-io/k3s-root/releases/download/${K3S_ROOT_VERSION}/k3s-root-${ARCH}.tar /opt/k3s-root/k3s-root.tar
+ADD https://github.com/k3s-io/k3s-root/releases/download/${K3S_ROOT_VERSION}/k3s-root-${TARGETARCH}.tar /opt/k3s-root/k3s-root.tar
 RUN tar xvf /opt/k3s-root/k3s-root.tar -C /opt/k3s-root --wildcards --strip-components=2 './bin/aux/*tables*'
 RUN tar xvf /opt/k3s-root/k3s-root.tar -C /opt/k3s-root './bin/ipset'
 
@@ -71,7 +71,7 @@ RUN go-build-static-k8s.sh -o bin/kubeadm                 ./cmd/kubeadm
 RUN go-build-static-k8s.sh -o bin/kubectl                 ./cmd/kubectl
 RUN go-build-static-k8s.sh -o bin/kubelet                 ./cmd/kubelet
 RUN go-assert-static.sh bin/*
-RUN if [ "${ARCH}" = "amd64" ]; then \
+RUN if [ "${TARGETARCH}" = "amd64" ]; then \
         go-assert-boring.sh bin/* ; \
     fi
 RUN install -s bin/* /usr/local/bin/
