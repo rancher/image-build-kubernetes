@@ -2,9 +2,9 @@ ARG BCI_BASE_IMAGE=registry.suse.com/bci/bci-base:15.5
 ARG BCI_BUSYBOX_IMAGE=registry.suse.com/bci/bci-busybox:15.5
 ARG GO_IMAGE=rancher/hardened-build-base:v1.22.3b1
 
-FROM ${BCI_BASE_IMAGE} as bci-base
-FROM ${BCI_BUSYBOX_IMAGE} as bci-busybox
-FROM ${GO_IMAGE} as build
+FROM ${BCI_BASE_IMAGE} AS bci-base
+FROM ${BCI_BUSYBOX_IMAGE} AS bci-busybox
+FROM ${GO_IMAGE} AS build
 RUN set -x && \
     apk --no-cache add \
     bash \
@@ -81,7 +81,7 @@ FROM bci-base AS kernel-tools
 RUN zypper update -y && \
     zypper install -y which conntrack-tools kmod
 
-FROM bci-busybox as kubernetes
+FROM bci-busybox AS kubernetes
 COPY --from=kernel-tools /usr/lib64/conntrack-tools /usr/lib64/conntrack-tools
 COPY --from=kernel-tools /usr/lib64/libmnl* /usr/lib64/libnetfilter* /usr/lib64/libnfnetlink* /usr/lib64/
 COPY --from=kernel-tools /usr/sbin/conntrack /usr/sbin/conntrack
