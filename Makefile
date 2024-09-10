@@ -14,6 +14,8 @@ ifeq ($(TAG),)
 TAG := v1.29.3-rke2dev$(BUILD_META)
 endif
 
+IMAGE ?= $(ORG)/hardened-kubernetes:$(TAG)-linux-$(ARCH)
+
 GOLANG_VERSION := $(shell ./scripts/golang-version.sh $(TAG))
 
 ifeq (,$(filter %$(BUILD_META),$(TAG)))
@@ -29,7 +31,7 @@ image-build:
 		--build-arg TAG=$(TAG) \
 		--build-arg GO_IMAGE=rancher/hardened-build-base:$(GOLANG_VERSION) \
 		--build-arg K3S_ROOT_VERSION=$(K3S_ROOT_VERSION) \
-		--tag $(ORG)/hardened-kubernetes:$(TAG)-linux-$(ARCH) \
+		--tag $(IMAGE) \
 		.
 
 .PHONY: all
@@ -41,6 +43,19 @@ all:
 .PHONY: image-push
 image-push:
 	docker push $(ORG)/hardened-kubernetes:$(TAG)-linux-$(ARCH) >> /dev/null
+
+.PHONY: push-image
+push-image:
+	docker buildx build \
+		--sbom=true \
+		--attest type=provenance,mode=max \
+		--platform=$(TARGET_PLATFORMS) \
+		--build-arg PKG=$(PKG) \
+		--build-arg SRC=$(SRC) \
+		--build-arg TAG=$(TAG:$(BUILD_META)=) \
+		--tag $(IMAGE) \
+		--push \
+		.
 
 .PHONY: scan
 image-scan:
