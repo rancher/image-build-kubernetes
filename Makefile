@@ -14,6 +14,25 @@ ifeq ($(TAG),)
 TAG := v1.29.3-rke2dev$(BUILD_META)
 endif
 
+ARCH=
+ifeq ($(UNAME_M), x86_64)
+	ARCH=amd64
+else ifeq ($(UNAME_M), aarch64)
+	ARCH=arm64
+else 
+	ARCH=$(UNAME_M)
+endif
+
+ifndef TARGET_PLATFORMS
+	ifeq ($(UNAME_M), x86_64)
+		TARGET_PLATFORMS:=linux/amd64
+	else ifeq ($(UNAME_M), aarch64)
+		TARGET_PLATFORMS:=linux/arm64
+	else 
+		TARGET_PLATFORMS:=linux/$(UNAME_M)
+	endif
+endif
+
 IMAGE ?= $(ORG)/hardened-kubernetes:$(TAG)-linux-$(ARCH)
 
 GOLANG_VERSION := $(shell ./scripts/golang-version.sh $(TAG))
@@ -42,7 +61,7 @@ all:
 
 .PHONY: image-push
 image-push:
-	docker push $(ORG)/hardened-kubernetes:$(TAG)-linux-$(ARCH) >> /dev/null
+	docker push $(IMAGE) >> /dev/null
 
 .PHONY: push-image
 push-image:
