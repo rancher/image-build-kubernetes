@@ -1,0 +1,66 @@
+---
+name: "Update k3sroot version" 
+
+sources:
+ k3sroot:
+   name: Get k3s-root version
+   kind: githubrelease
+   spec:
+     owner: k3s-io
+     repository: k3s-root
+     token: '{{ requiredEnv .github.token }}'
+     typefilter:
+       release: true
+       draft: false
+       prerelease: false
+     versionfilter:
+       kind: semver
+       # pattern accepts any semver constraint
+       pattern: "*"
+
+targets:
+  dockerfile:
+    name: "Bump to latest k3s-root version in Dockerfile"
+    kind: dockerfile
+    scmid: default
+    sourceid: k3sroot
+    spec:
+      file: "Dockerfile"
+      instruction:
+        keyword: "ARG"
+        matcher: "K3S_ROOT_VERSION"
+
+  makefile:
+    name: "Bump to latest k3s-root version in Makefile"
+    kind: file
+    scmid: default
+    disablesourceinput: true
+    spec:
+      file: Makefile
+      matchpattern: '(?m)^K3S_ROOT_VERSION \?\= (.*)'
+      replacepattern: 'K3S_ROOT_VERSION ?= {{ source "k3sroot" }}'
+
+scms:
+  default:
+    kind: github
+    spec:
+      token: '{{ requiredEnv .github.token }}'
+      username: '{{ .github.username }}'
+      user: '{{ .github.user }}'
+      email: '{{ .github.email }}'
+      owner: '{{ .github.owner }}'
+      repository: '{{ .github.repository }}'
+      branch: '{{ .github.branch }}'
+      
+actions:
+    default:
+        title: 'Bump K3s-root version to {{ source "k3sroot" }}'
+        kind: github/pullrequest
+        spec:
+            automerge: false
+            labels:
+                - chore
+                - skip-changelog
+                - status/auto-created
+        scmid: default
+
