@@ -33,7 +33,7 @@ ifndef TARGET_PLATFORMS
 	endif
 endif
 
-IMAGE ?= $(ORG)/hardened-kubernetes:$(TAG)-linux-$(ARCH)
+IMAGE ?= $(ORG)/hardened-kubernetes:$(TAG)
 
 GOLANG_VERSION := $(shell ./scripts/golang-version.sh $(TAG))
 
@@ -72,7 +72,10 @@ push-image:
 		--build-arg PKG=$(PKG) \
 		--build-arg SRC=$(SRC) \
 		--build-arg TAG=$(TAG:$(BUILD_META)=) \
-		--tag $(IMAGE) \
+		--build-arg GO_IMAGE=rancher/hardened-build-base:$(GOLANG_VERSION) \
+		--build-arg K3S_ROOT_VERSION=$(K3S_ROOT_VERSION) \
+		--build-arg K8S_TAG=$(shell echo $(TAG) | grep -oP "^v(([0-9]+)\.([0-9]+)\.([0-9]+))") \
+		--tag $(ORG)/hardened-kubernetes:$(shell echo $(TAG) | sed -e 's/+/-/g') \
 		--push \
 		.
 
