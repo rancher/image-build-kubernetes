@@ -38,7 +38,6 @@ jobs:
       with:
         image: hardened-kubernetes
         tag: ${{ github.event.release.tag_name }}
-        context: .
         public-repo: rancher
         public-username: ${{ env.DOCKER_USERNAME }}
         public-password: ${{ env.DOCKER_PASSWORD }}
