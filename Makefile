@@ -2,7 +2,6 @@ SEVERITIES = HIGH,CRITICAL
 
 UNAME_M = $(shell uname -m)
 
-ORG ?= rancher
 PKG ?= github.com/kubernetes/kubernetes
 SRC ?= github.com/kubernetes/kubernetes
 TAG ?= ${GITHUB_ACTION_TAG}
@@ -51,14 +50,14 @@ image-build:
 		--build-arg TAG=$(TAG) \
 		--build-arg GO_IMAGE=rancher/hardened-build-base:$(GOLANG_VERSION) \
 		--build-arg K3S_ROOT_VERSION=$(K3S_ROOT_VERSION) \
-		--tag $(IMAGE) \
+		--tag $(IMAGE)-linux-$(ARCH) \
 		.
 
 .PHONY: all
 all:
 	docker build \
 		--build-arg K8S_TAG=$(shell echo $(TAG) | grep -oP "^v(([0-9]+)\.([0-9]+)\.([0-9]+))") \
-		--build-arg TAG=$(TAG) -t $(ORG)/hardened-kubernetes:$(shell echo $(TAG) | sed -e 's/+/-/g') .
+		--build-arg TAG=$(TAG) -t $(IMAGE) .
 
 .PHONY: image-push
 image-push:
@@ -83,12 +82,11 @@ push-image:
 
 .PHONY: scan
 image-scan:
-	trivy image --severity $(SEVERITIES) --no-progress --skip-db-update --ignore-unfixed $(ORG)/hardened-kubernetes:$(TAG)-linux-$(ARCH)
+	trivy image --severity $(SEVERITIES) --no-progress --skip-db-update --ignore-unfixed $(IMAGE)-linux-$(ARCH)
 
 PHONY: log
 log:
 	@echo "TAG=$(TAG)"
-	@echo "ORG=$(ORG)"
 	@echo "PKG=$(PKG)"
 	@echo "SRC=$(SRC)"
 	@echo "BUILD_META=$(BUILD_META)"
