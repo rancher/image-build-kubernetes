@@ -29,6 +29,27 @@ jobs:
         echo "TAG=v1.29.11-rke2r1-build20241127" >> "$GITHUB_ENV"
         echo "GOLANG_VERSION=v1.22.8b2" >> "$GITHUB_ENV"
 
+    - name: Pre-build disk usage
+      run: |
+        echo "PRE_BUILD_USAGE=$(df -h / | awk 'NR==2 {print $5}' | sed 's/%//')" >> $GITHUB_ENV
+
     - name: Build image
       id: make
+      continue-on-error: true  
       run: make push-image
+
+    - name: Post-build disk usage and analysis
+      if: always()
+      run: |
+        POST_BUILD_USAGE=$(df -h / | awk 'NR==2 {print $5}' | sed 's/%//')
+        USAGE_DIFF=$((POST_BUILD_USAGE - $PRE_BUILD_USAGE))
+        
+        echo "Disk Usage Statistics:"
+        echo "Pre-build: ${PRE_BUILD_USAGE}%"
+        echo "Post-build: ${POST_BUILD_USAGE}%"
+        echo "Difference: ${USAGE_DIFF}%"
+        
+        # Optional: Fail if usage exceeds threshold
+        if [ "$POST_BUILD_USAGE" -gt 90 ]; then
+          echo "::warning::Disk usage critically high: ${POST_BUILD_USAGE}%"
+        fi
