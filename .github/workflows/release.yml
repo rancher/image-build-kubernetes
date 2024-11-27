@@ -13,6 +13,29 @@ jobs:
       id-token: write
     runs-on: ubuntu-latest
     steps:
+    - name: Pre-cleanup disk usage
+      run: |
+        echo "PRE_CLEANUP: $(df -h / | awk 'NR==2 {print $5}' | sed 's/%//')"
+
+    - name: Free up disk space
+      run: |
+        sudo apt-get autoremove -y
+        sudo apt-get clean
+
+        npm cache clean --force
+        yarn cache clean
+
+        docker system prune -af --volumes
+        docker image prune --all --force
+
+        sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+
+        df -h /
+
+    - name: After-cleanup disk usage
+      run: |
+        echo "AFTER_CLEANUP: $(df -h / | awk 'NR==2 {print $5}' | sed 's/%//')"
+
     - name: Check out code
       uses: actions/checkout@v4
 
