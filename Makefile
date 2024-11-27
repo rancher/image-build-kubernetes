@@ -77,7 +77,6 @@ push-image:
 		--build-arg K3S_ROOT_VERSION=$(K3S_ROOT_VERSION) \
 		--build-arg K8S_TAG=$(shell echo $(TAG) | grep -oP "^v(([0-9]+)\.([0-9]+)\.([0-9]+))") \
 		--tag $(IMAGE) \
-		--push \
 		.
 
 .PHONY: scan
