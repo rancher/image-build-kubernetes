@@ -13,6 +13,15 @@ jobs:
       id-token: write
     runs-on: ubuntu-latest
     steps:
+    - name: Check out code
+      uses: actions/checkout@v4
+
+    - name: get the build-args values
+      id: get-build-args
+      run: |
+        echo "TAG=v1.29.11-rke2r1-build20241127" >> "$GITHUB_ENV"
+        echo "GOLANG_VERSION=v1.22.8b2" >> "$GITHUB_ENV"
+
     - name: Pre-cleanup disk usage
       run: |
         echo "PRE_CLEANUP: $(df -h / | awk 'NR==2 {print $5}' | sed 's/%//')"
@@ -32,29 +41,20 @@ jobs:
 
         df -h /
 
-    - name: After-cleanup disk usage
-      run: |
-        echo "AFTER_CLEANUP: $(df -h / | awk 'NR==2 {print $5}' | sed 's/%//')"
-
-    - name: Check out code
-      uses: actions/checkout@v4
-
-    - name: Setup QEMU
-      uses: docker/setup-qemu-action@v3
-    - name: Setup Docker Buildx
-      uses: docker/setup-buildx-action@v3
-    - name: Install Cosign
-      uses: sigstore/cosign-installer@v3.5.0
-
-    - name: get the build-args values
-      id: get-build-args
-      run: |
-        echo "TAG=v1.29.11-rke2r1-build20241127" >> "$GITHUB_ENV"
-        echo "GOLANG_VERSION=v1.22.8b2" >> "$GITHUB_ENV"
-
     - name: Pre-build disk usage
       run: |
         echo "PRE_BUILD_USAGE=$(df -h / | awk 'NR==2 {print $5}' | sed 's/%//')" >> $GITHUB_ENV
+
+    - name: Build and push image
+      uses: rancher/ecm-distro-tools/actions/publish-image@master
+      with:
+        image: hardened-kubernetes
+        tag: ${{ github.event.release.tag_name }}
+        public-repo: rancher
+        public-username: rancher
+        public-password: rancher
+        push-to-public: false
+        push-to-prime: false
 
     - name: Build image
       id: make
