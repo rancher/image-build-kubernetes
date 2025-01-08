@@ -1,9 +1,7 @@
-ARG BCI_BASE_IMAGE=registry.suse.com/bci/bci-base:15.5
-ARG BCI_BUSYBOX_IMAGE=registry.suse.com/bci/bci-busybox:15.5
+ARG BCI_IMAGE=registry.suse.com/bci/bci-base:15.5
 ARG GO_IMAGE=rancher/hardened-build-base:v1.22.7b1
 
-FROM ${BCI_BASE_IMAGE} as bci-base
-FROM ${BCI_BUSYBOX_IMAGE} as bci-busybox
+FROM ${BCI_IMAGE} as bci
 FROM ${GO_IMAGE} as build
 RUN set -x && \
     apk --no-cache add \
@@ -77,15 +75,10 @@ RUN if [ "${TARGETARCH}" = "amd64" ]; then \
 RUN install -s bin/* /usr/local/bin/
 RUN kube-proxy --version
 
-FROM bci-base AS kernel-tools
+FROM bci AS kubernetes
 RUN zypper update -y && \
     zypper install -y which conntrack-tools kmod
 
-FROM bci-busybox as kubernetes
-COPY --from=kernel-tools /usr/lib64/conntrack-tools /usr/lib64/conntrack-tools
-COPY --from=kernel-tools /usr/lib64/libmnl* /usr/lib64/libnetfilter* /usr/lib64/libnfnetlink* /usr/lib64/
-COPY --from=kernel-tools /usr/sbin/conntrack /usr/sbin/conntrack
-COPY --from=kernel-tools /usr/sbin/modprobe /usr/sbin/modprobe
 COPY --from=build-k8s /opt/k3s-root/aux/ /usr/sbin/
 COPY --from=build-k8s /opt/k3s-root/bin/ /bin/
 COPY --from=build-k8s /usr/local/bin/ /usr/local/bin/
