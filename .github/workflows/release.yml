@@ -17,6 +17,14 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v4
 
+    - name: Check for dev tag
+      run: |
+        if ! echo "$GITHUB_REF" | grep -E '\+rke2dev[0-9]+'; then
+          echo "Build meta must include dev number."
+          exit 0
+        fi
+        echo "Dev tag detected, continuing."
+
     - name: get the build-args values
       id: get-build-args
       run: |
@@ -27,21 +35,22 @@ jobs:
       uses: rancher-eio/read-vault-secrets@main
       with:
         secrets: |
-          secret/data/github/repo/${{ github.repository }}/dockerhub/${{ github.repository_owner }}/credentials username | DOCKER_USERNAME ;
-          secret/data/github/repo/${{ github.repository }}/dockerhub/${{ github.repository_owner }}/credentials password | DOCKER_PASSWORD ;
+          secret/data/github/repo/${{ github.repository }}/private-upstream/${{ github.repository_owner }}/credentials repo | UPSTREAM_GITHUB_REPO ;
+          secret/data/github/repo/${{ github.repository }}/private-upstream/${{ github.repository_owner }}/credentials token | UPSTREAM_GITHUB_TOKEN ;
           secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials registry | PRIME_REGISTRY ;
           secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials username | PRIME_REGISTRY_USERNAME ;
           secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials password | PRIME_REGISTRY_PASSWORD
 
     - name: Build and push image
       uses: rancher/ecm-distro-tools/actions/publish-image@master
+      env:
+        UPSTREAM_GITHUB_REPO: ${{ env.UPSTREAM_GITHUB_REPO }}
+        UPSTREAM_GITHUB_TOKEN: ${{ env.UPSTREAM_GITHUB_TOKEN }}
       with:
         image: hardened-kubernetes
         tag: ${{ github.event.release.tag_name }}
-        public-repo: rancher
-        public-username: ${{ env.DOCKER_USERNAME }}
-        public-password: ${{ env.DOCKER_PASSWORD }}
-
+        push-to-public: false
+        push-to-prime: true
         prime-repo: rancher
         prime-registry: ${{ env.PRIME_REGISTRY }}
         prime-username: ${{ env.PRIME_REGISTRY_USERNAME }}

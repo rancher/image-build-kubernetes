@@ -6,16 +6,28 @@ cd $(dirname $0)
 
 which yq > /dev/null || go install github.com/mikefarah/yq/v4@v4.35.2
 
-K8S_VERSION=$(./semver-parse.sh $1 all)
-
-if [ -z "${K8S_VERSION}" ] || [ "${K8S_VERSION}" == "v.." ]; then
-  echo "No Kubernetes version found in tag ${1}"
+if [ -z "$1" ]; then
+  echo "usage: $(basename "$0") <TAG> [GITHUB_REPO] [GITHUB_TOKEN]"
   exit 1
 fi
 
-GO_VERSION_URL="https://raw.githubusercontent.com/kubernetes/kubernetes/${K8S_VERSION}/.go-version"
-GO_VERSION=$(curl -sL "${GO_VERSION_URL}")
+TAG="$1"
+UPSTREAM_GITHUB_REPO="${2:-kubernetes/kubernetes}"
+UPSTREAM_GITHUB_TOKEN="$3"
+K8S_VERSION=$(./semver-parse.sh "$TAG" all)
 
+if [ -z "${K8S_VERSION}" ] || [ "${K8S_VERSION}" == "v.." ]; then
+  echo "No Kubernetes version found in tag ${TAG}"
+  exit 1
+fi
+
+GO_VERSION_URL="https://raw.githubusercontent.com/${UPSTREAM_GITHUB_REPO}/${K8S_VERSION}/.go-version"
+
+if [ -n "${UPSTREAM_GITHUB_TOKEN}" ]; then
+  GO_VERSION=$(curl -sL -H "authorization: token ${UPSTREAM_GITHUB_TOKEN}" "${GO_VERSION_URL}")
+else
+  GO_VERSION=$(curl -sL "${GO_VERSION_URL}")
+fi
 if [[ "${GO_VERSION}" != "1."* ]]; then
   echo "No Go version found for Kubernetes ${K8S_VERSION}"
   exit 1
