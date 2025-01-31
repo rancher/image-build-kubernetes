@@ -35,17 +35,24 @@ jobs:
       uses: rancher-eio/read-vault-secrets@main
       with:
         secrets: |
-          secret/data/github/repo/${{ github.repository }}/private-upstream/${{ github.repository_owner }}/credentials repo | UPSTREAM_GITHUB_REPO ;
-          secret/data/github/repo/${{ github.repository }}/private-upstream/${{ github.repository_owner }}/credentials token | UPSTREAM_GITHUB_TOKEN ;
           secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials registry | PRIME_REGISTRY ;
           secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials username | PRIME_REGISTRY_USERNAME ;
-          secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials password | PRIME_REGISTRY_PASSWORD
+          secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials password | PRIME_REGISTRY_PASSWORD ;
+          secret/data/github/repo/${{ github.repository }}/github/release-app-credentials appId | APP_ID ;
+          secret/data/github/repo/${{ github.repository }}/github/release-app-credentials privateKey | PRIVATE_KEY
+    
+    - name: Create App Token
+      continue-on-error: true
+      uses: actions/create-github-app-token@v1
+      id: app-token
+      with:
+        app-id: ${{ env.APP_ID }}
+        private-key: ${{ env.PRIVATE_KEY }}
 
     - name: Build and push image
       uses: rancher/ecm-distro-tools/actions/publish-image@master
       env:
-        UPSTREAM_GITHUB_REPO: ${{ env.UPSTREAM_GITHUB_REPO }}
-        UPSTREAM_GITHUB_TOKEN: ${{ env.UPSTREAM_GITHUB_TOKEN }}
+        SRC: x-access-token:${{ steps.app-token.outputs.token }}@github.com/rancher/release-kubernetes
       with:
         image: hardened-kubernetes
         tag: ${{ github.event.release.tag_name }}

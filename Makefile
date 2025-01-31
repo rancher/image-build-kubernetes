@@ -35,15 +35,7 @@ endif
 REPO ?= rancher
 IMAGE ?= $(REPO)/hardened-kubernetes:$(shell echo $(TAG) | sed -e 's/+/-/g')
 
-UPSTREAM_GITHUB_REPO ?= kubernetes/kubernetes
-UPSTREAM_GITHUB_TOKEN ?=
-GOLANG_VERSION := $(shell ./scripts/golang-version.sh $(TAG) $(UPSTREAM_GITHUB_REPO) $(UPSTREAM_GITHUB_TOKEN))
-
-ifeq ($(strip $(UPSTREAM_GITHUB_TOKEN)),)
-	UPSTREAM_REPO := https://github.com/$(UPSTREAM_GITHUB_REPO).git
-else
-	UPSTREAM_REPO := https://$(UPSTREAM_GITHUB_TOKEN)@github.com/$(UPSTREAM_GITHUB_REPO).git
-endif
+GOLANG_VERSION := $(shell ./scripts/golang-version.sh $(TAG))
 
 ifeq (,$(filter %$(BUILD_META),$(TAG)))
 $(error TAG $(TAG) needs to end with build metadata: $(BUILD_META))
@@ -58,7 +50,6 @@ image-build:
 		--build-arg TAG=$(TAG) \
 		--build-arg GO_IMAGE=rancher/hardened-build-base:$(GOLANG_VERSION) \
 		--build-arg K3S_ROOT_VERSION=$(K3S_ROOT_VERSION) \
-		--build-arg UPSTREAM=$(UPSTREAM_REPO) \
 		--tag $(IMAGE)-linux-$(ARCH) \
 		.
 
@@ -85,7 +76,6 @@ push-image:
 		--build-arg GO_IMAGE=rancher/hardened-build-base:$(GOLANG_VERSION) \
 		--build-arg K3S_ROOT_VERSION=$(K3S_ROOT_VERSION) \
 		--build-arg K8S_TAG=$(shell echo $(TAG) | grep -oP "^v(([0-9]+)\.([0-9]+)\.([0-9]+))") \
-		--build-arg UPSTREAM=$(UPSTREAM_REPO) \
 		--tag $(IMAGE) \
 		--push \
 		.
@@ -99,7 +89,6 @@ log:
 	@echo "TAG=$(TAG)"
 	@echo "PKG=$(PKG)"
 	@echo "SRC=$(SRC)"
-	@echo "UPSTREAM_GITHUB_REPO=$(UPSTREAM_GITHUB_REPO)"
 	@echo "BUILD_META=$(BUILD_META)"
 	@echo "K3S_ROOT_VERSION=$(K3S_ROOT_VERSION)"
 	@echo "UNAME_M=$(UNAME_M)"

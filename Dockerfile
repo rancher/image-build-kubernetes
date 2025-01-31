@@ -19,13 +19,15 @@ RUN set -x && \
     py-pip
 
 FROM build AS build-k8s-codegen
-ARG TAG UPSTREAM=https://github.com/kubernetes/kubernetes.git
+ARG TAG SRC=github.com/kubernetes/kubernetes
 
 COPY ./scripts/semver-parse.sh /semver-parse.sh
 RUN chmod +x /semver-parse.sh
 
-RUN echo $(/semver-parse.sh ${TAG} all)
-RUN git clone -b $(/semver-parse.sh ${TAG} all) --depth=1 -- ${UPSTREAM} ${GOPATH}/src/kubernetes
+RUN UPSTREAM_TAG=$(/semver-parse.sh ${TAG} all) && \
+    echo "$UPSTREAM_TAG" && \
+    git clone -b "$UPSTREAM_TAG" --depth=1 -- "https://${SRC}.git" "${GOPATH}/src/kubernetes"
+
 WORKDIR ${GOPATH}/src/kubernetes
 
 # force code generation
