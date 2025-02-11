@@ -34,6 +34,8 @@ jobs:
 
     - name: Set the TAG value
       id: get-TAG
+      env:
+        GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
       run: |
         echo "$(make -s log | grep TAG)" >> "$GITHUB_ENV"
     - name: Build container image
