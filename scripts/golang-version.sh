@@ -13,8 +13,8 @@ if [ -z "${K8S_VERSION}" ] || [ "${K8S_VERSION}" == "v.." ]; then
   exit 1
 fi
 
-GO_VERSION_URL="https://raw.githubusercontent.com/kubernetes/kubernetes/${K8S_VERSION}/.go-version"
-GO_VERSION=$(curl -sL "${GO_VERSION_URL}")
+GO_VERSION_URL="https://raw.githubusercontent.com/rancher/release-kubernetes/${K8S_VERSION}/.go-version"
+GO_VERSION=$(curl -sL --header "authorization: token ${GITHUB_TOKEN}" "${GO_VERSION_URL}" )
 
 if [[ "${GO_VERSION}" != "1."* ]]; then
   echo "No Go version found for Kubernetes ${K8S_VERSION}"

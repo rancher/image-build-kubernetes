@@ -36,6 +36,7 @@ jobs:
     - name: Build and push image
       uses: rancher/ecm-distro-tools/actions/publish-image@master
       env:
+        GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
         SRC: x-access-token:${{ steps.app-token.outputs.token }}@github.com/rancher/release-kubernetes
       with:
         image: hardened-kubernetes
