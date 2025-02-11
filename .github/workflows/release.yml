@@ -17,12 +17,6 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v4
 
-    - name: get the build-args values
-      id: get-build-args
-      run: |
-        echo "$(make -s log | grep TAG)" >> "$GITHUB_ENV"
-        echo "$(make -s log | grep GOLANG_VERSION)" >> "$GITHUB_ENV"
-
     - name: "Read secrets"
       uses: rancher-eio/read-vault-secrets@main
       with:
@@ -32,6 +26,14 @@ jobs:
           secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials password | PRIME_REGISTRY_PASSWORD ;
           secret/data/github/repo/${{ github.repository }}/github/release-app-credentials appId | APP_ID ;
           secret/data/github/repo/${{ github.repository }}/github/release-app-credentials privateKey | PRIVATE_KEY
+
+    - name: get the build-args values
+      id: get-build-args
+      env:
+        GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+      run: |
+        echo "$(make -s log | grep TAG)" >> "$GITHUB_ENV"
+        echo "$(make -s log | grep GOLANG_VERSION)" >> "$GITHUB_ENV"
 
     - name: Build and push image
       uses: rancher/ecm-distro-tools/actions/publish-image@master
