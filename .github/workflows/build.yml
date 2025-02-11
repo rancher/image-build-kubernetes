@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
   security-events: write # upload Sarif results
 
 name: Build
@@ -16,8 +17,25 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: "Read secrets"
+      uses: rancher-eio/read-vault-secrets@main
+      with:
+        secrets: |
+          secret/data/github/repo/${{ github.repository }}/github/release-app-credentials appId | APP_ID ;
+          secret/data/github/repo/${{ github.repository }}/github/release-app-credentials privateKey | PRIVATE_KEY
+
+    - name: Create App Token
+      uses: actions/create-github-app-token@v1
+      id: app-token
+      with:
+        repositories: release-kubernetes
+        app-id: ${{ env.APP_ID }}
+        private-key: ${{ env.PRIVATE_KEY }}
+
     - name: Set the TAG value
       id: get-TAG
+      env:
+        GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
       run: |
         echo "$(make -s log | grep TAG)" >> "$GITHUB_ENV"
     - name: Build container image
@@ -29,6 +47,7 @@ jobs:
         file: Dockerfile
         build-args: |
           TAG=${{ env.TAG }}
+          SRC=x-access-token:${{ steps.app-token.outputs.token }}@github.com/rancher/release-kubernetes
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@0.18.0
@@ -50,6 +69,21 @@ jobs:
     steps:
     - name: Check out code
       uses: actions/checkout@v4
+
+    - name: "Read secrets"
+      uses: rancher-eio/read-vault-secrets@main
+      with:
+        secrets: |
+          secret/data/github/repo/${{ github.repository }}/github/release-app-credentials appId | APP_ID ;
+          secret/data/github/repo/${{ github.repository }}/github/release-app-credentials privateKey | PRIVATE_KEY
+
+    - name: Create App Token
+      uses: actions/create-github-app-token@v1
+      id: app-token
+      with:
+        repositories: release-kubernetes
+        app-id: ${{ env.APP_ID }}
+        private-key: ${{ env.PRIVATE_KEY }}
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
@@ -73,3 +107,4 @@ jobs:
         platforms: linux/arm64
         build-args: |
           TAG=${{ env.TAG }}
+          SRC=x-access-token:${{ steps.app-token.outputs.token }}@github.com/rancher/release-kubernetes
