@@ -58,7 +58,7 @@ FROM build-k8s-codegen AS build-k8s
 ARG TARGETARCH
 ARG K3S_ROOT_VERSION=v0.14.1
 ADD https://github.com/k3s-io/k3s-root/releases/download/${K3S_ROOT_VERSION}/k3s-root-${TARGETARCH}.tar /opt/k3s-root/k3s-root.tar
-RUN tar xvf /opt/k3s-root/k3s-root.tar -C /opt/k3s-root --wildcards --strip-components=2 './bin/aux/*tables*'
+RUN tar xvf /opt/k3s-root/k3s-root.tar -C /opt/k3s-root --wildcards --strip-components=2 './bin/aux/*tables*' './bin/aux/nft'
 RUN tar xvf /opt/k3s-root/k3s-root.tar -C /opt/k3s-root './bin/ipset'
 
 RUN go-build-static-k8s.sh -o bin/kube-apiserver          ./cmd/kube-apiserver
@@ -77,7 +77,7 @@ RUN kube-proxy --version
 
 FROM bci AS kubernetes
 RUN zypper update -y && \
-    zypper install -y which conntrack-tools kmod timezone
+    zypper install -y which conntrack-tools kmod timezone awk
 COPY --from=build-k8s /opt/k3s-root/aux/ /usr/sbin/
 COPY --from=build-k8s /opt/k3s-root/bin/ /bin/
 COPY --from=build-k8s /usr/local/bin/ /usr/local/bin/
