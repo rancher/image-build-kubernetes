@@ -10,7 +10,7 @@ K3S_ROOT_VERSION ?= v0.14.1
 BUILD_META := -build$(shell date +%Y%m%d)
 
 ifeq ($(TAG),)
-TAG := v1.29.3-rke2dev$(BUILD_META)
+TAG := v1.32.2-rke2dev$(BUILD_META)
 endif
 
 ARCH=
