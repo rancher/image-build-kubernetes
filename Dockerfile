@@ -65,7 +65,6 @@ RUN go-build-static-k8s.sh -o bin/kube-apiserver          ./cmd/kube-apiserver
 RUN go-build-static-k8s.sh -o bin/kube-controller-manager ./cmd/kube-controller-manager
 RUN go-build-static-k8s.sh -o bin/kube-scheduler          ./cmd/kube-scheduler
 RUN go-build-static-k8s.sh -o bin/kube-proxy              ./cmd/kube-proxy
-RUN go-build-static-k8s.sh -o bin/kubeadm                 ./cmd/kubeadm
 RUN go-build-static-k8s.sh -o bin/kubectl                 ./cmd/kubectl
 RUN go-build-static-k8s.sh -o bin/kubelet                 ./cmd/kubelet
 RUN go-assert-static.sh bin/*
