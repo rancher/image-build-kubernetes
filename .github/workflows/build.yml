@@ -21,7 +21,7 @@ jobs:
       run: |
         echo "$(make -s log | grep TAG)" >> "$GITHUB_ENV"
     - name: Build container image
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         context: .
         push: false
@@ -63,7 +63,7 @@ jobs:
       run: |
         echo "$(make -s log | grep TAG)" >> "$GITHUB_ENV"
     - name: Build container image
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         context: .
         push: false
