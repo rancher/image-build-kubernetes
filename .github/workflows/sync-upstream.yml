@@ -1,0 +1,33 @@
+name: Sync Upstream
+run-name: Upstream Sync
+on:
+  schedule:
+    - cron: "0 17 * * *"
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Read Secrets"
+        uses: rancher-eio/read-vault-secrets@main
+        with:
+          secrets: |
+            secret/data/github/repo/${{ github.repository }}/github/app-credentials appId | APP_ID ;
+            secret/data/github/repo/${{ github.repository }}/github/app-credentials privateKey | PRIVATE_KEY
+
+      - name: Generate GitHub App token
+        id: generate-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ env.APP_ID }}
+          private-key: ${{ env.PRIVATE_KEY }}
+
+      - name: Sync Kubernetes Release
+        uses: rancher/ecm-distro-tools/actions/sync-upstream-release@master
+        with:
+          upstream-owner: 'kubernetes'
+          upstream-repo: 'kubernetes'
+          image-build-owner: ${{ github.repository_owner }}
+          image-build-repo: ${{ github.event.repository.name }}
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
