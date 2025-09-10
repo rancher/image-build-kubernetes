@@ -5,6 +5,10 @@ on:
     - cron: "0 17 * * *"
   workflow_dispatch:
 
+permissions:
+    contents: write
+    id-token: write
+
 jobs:
   sync:
     runs-on: ubuntu-latest
