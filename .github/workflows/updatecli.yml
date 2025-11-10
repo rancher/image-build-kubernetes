@@ -29,6 +29,8 @@ jobs:
 
       - name: Install Updatecli
         uses: updatecli/updatecli-action@v2
+        with:
+          version: v0.110.2
 
       - name: Delete leftover UpdateCLI branches
         run: |
