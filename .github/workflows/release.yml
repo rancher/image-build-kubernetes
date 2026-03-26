@@ -15,7 +15,7 @@ jobs:
     runs-on: runs-on,runner=8cpu-linux-x64,run-id=${{ github.run_id }},image=ubuntu22-full-x64
     steps:
     - name: Check out code
-      uses: actions/checkout@v4
+      uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
     - name: get the build-args values
       id: get-build-args
@@ -24,7 +24,7 @@ jobs:
         echo "$(make -s log | grep GOLANG_VERSION)" >> "$GITHUB_ENV"
 
     - name: "Read secrets"
-      uses: rancher-eio/read-vault-secrets@main
+      uses: rancher-eio/read-vault-secrets@0da85151ad1f19ed7986c41587e45aac1ace74b6 # v3
       with:
         secrets: |
           secret/data/github/repo/${{ github.repository }}/dockerhub/${{ github.repository_owner }}/credentials username | DOCKER_USERNAME ;
@@ -34,7 +34,7 @@ jobs:
           secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials password | PRIME_REGISTRY_PASSWORD
 
     - name: Build and push image
-      uses: rancher/ecm-distro-tools/actions/publish-image@master
+      uses: rancher/ecm-distro-tools/actions/publish-image@10ab39987d39be83da6a252c1c3b540e496e0287 # v0.66.0
       with:
         image: hardened-kubernetes
         tag: ${{ github.event.release.tag_name }}
