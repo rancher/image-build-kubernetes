@@ -5,7 +5,7 @@ UNAME_M = $(shell uname -m)
 PKG ?= github.com/kubernetes/kubernetes
 SRC ?= github.com/kubernetes/kubernetes
 TAG ?= ${GITHUB_ACTION_TAG}
-K3S_ROOT_VERSION ?= v0.14.1
+K3S_ROOT_VERSION ?= v0.15.0
 
 BUILD_META := -build$(shell date +%Y%m%d)
 
@@ -67,8 +67,7 @@ image-push:
 push-image:
 	docker buildx build \
 		$(IID_FILE_FLAG) \
-		--sbom=true \
-		--attest type=provenance,mode=max \
+		$(BUILDX_ARGS) \
 		--platform=$(TARGET_PLATFORMS) \
 		--build-arg PKG=$(PKG) \
 		--build-arg SRC=$(SRC) \
@@ -79,6 +78,11 @@ push-image:
 		--tag $(IMAGE) \
 		--push \
 		.
+
+.PHONY: push-prime-image
+push-prime-image:
+	BUILDX_ARGS="--sbom=true --attest type=provenance,mode=max" \
+	$(MAKE) push-image
 
 .PHONY: scan
 image-scan:
