@@ -4,7 +4,7 @@ set -x
 
 cd $(dirname $0)
 
-which yq > /dev/null || go install github.com/mikefarah/yq/v4@v4.35.2
+which yq > /dev/null || go install github.com/mikefarah/yq/v4@a198f72367ce9da70b564a2cc25399de8e27bf37 #v4.35.2
 
 K8S_VERSION=$(./semver-parse.sh $1 all)
 
