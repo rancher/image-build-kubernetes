@@ -34,7 +34,7 @@ jobs:
           secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials password | PRIME_REGISTRY_PASSWORD
 
     - name: Build and push image
-      uses: rancher/ecm-distro-tools/actions/publish-image@dcb7716af5a318567115a231643164e1d8446021 # v0.67.2
+      uses: rancher/ecm-distro-tools/actions/publish-image@eb9f1b8024d407105b1f2d90e2ceca27a950f921 # v0.67.4
       with:
         image: hardened-kubernetes
         tag: ${{ github.event.release.tag_name }}
