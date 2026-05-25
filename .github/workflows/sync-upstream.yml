@@ -28,7 +28,7 @@ jobs:
           private-key: ${{ env.PRIVATE_KEY }}
 
       - name: Sync Kubernetes Release
-        uses: rancher/ecm-distro-tools/actions/sync-upstream-release@0e1697ecc955e85ec73970b66c8984241fa84a28 # v0.69.0
+        uses: rancher/ecm-distro-tools/actions/sync-upstream-release@3a1c5e3106195b82d8700f8f760107aa634fecdf # v0.70.0
         with:
           upstream-owner: 'kubernetes'
           upstream-repo: 'kubernetes'
