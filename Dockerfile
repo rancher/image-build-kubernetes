@@ -1,8 +1,8 @@
-ARG BCI_IMAGE=registry.suse.com/bci/bci-base:16.0
-ARG GO_IMAGE=rancher/hardened-build-base:v1.23.11b1
+ARG BCI_IMAGE=registry.suse.com/bci/bci-nano:16.0
+ARG GO_IMAGE=rancher/hardened-build-base:v1.26.4b1
 
-FROM ${BCI_IMAGE} as bci
-FROM ${GO_IMAGE} as build
+FROM ${BCI_IMAGE} AS bci
+FROM ${GO_IMAGE} AS build
 RUN set -x && \
     apk --no-cache add \
     bash \
@@ -55,12 +55,6 @@ RUN echo 'go-build-static.sh -gcflags=-trimpath=${GOPATH}/src/kubernetes -mod=ve
 RUN chmod -v +x /usr/local/go/bin/go-*.sh
 
 FROM build-k8s-codegen AS build-k8s
-ARG TARGETARCH
-ARG K3S_ROOT_VERSION=v0.15.0
-ADD https://github.com/k3s-io/k3s-root/releases/download/${K3S_ROOT_VERSION}/k3s-root-${TARGETARCH}.tar /opt/k3s-root/k3s-root.tar
-RUN tar xvf /opt/k3s-root/k3s-root.tar -C /opt/k3s-root --wildcards --strip-components=2 './bin/aux/*tables*' './bin/aux/nft'
-RUN tar xvf /opt/k3s-root/k3s-root.tar -C /opt/k3s-root './bin/ipset'
-
 RUN go-build-static-k8s.sh -o bin/kube-apiserver          ./cmd/kube-apiserver
 RUN go-build-static-k8s.sh -o bin/kube-controller-manager ./cmd/kube-controller-manager
 RUN go-build-static-k8s.sh -o bin/kube-scheduler          ./cmd/kube-scheduler
@@ -74,9 +68,17 @@ RUN if [ "${TARGETARCH}" = "amd64" ]; then \
 RUN install -s bin/* /usr/local/bin/
 RUN kube-proxy --version
 
+FROM ${GO_IMAGE} AS k3s-root
+ARG TARGETARCH
+ARG K3S_ROOT_VERSION=v0.15.2
+ADD https://github.com/k3s-io/k3s-root/releases/download/${K3S_ROOT_VERSION}/k3s-root-${TARGETARCH}.tar /opt/k3s-root/k3s-root.tar
+RUN tar xvf /opt/k3s-root/k3s-root.tar -C /opt/k3s-root \
+ && mkdir -p /opt/k3s-root/usr \
+ && mv /opt/k3s-root/bin/aux /opt/k3s-root/usr/sbin \
+ && ln -sf ../bin/busybox /opt/k3s-root/usr/sbin/modprobe \
+ && ln -sf ../bin/busybox /opt/k3s-root/usr/sbin/mount
+
 FROM bci AS kubernetes
-RUN zypper update -y && \
-    zypper install -y which conntrack-tools kmod timezone awk
-COPY --from=build-k8s /opt/k3s-root/aux/ /usr/sbin/
-COPY --from=build-k8s /opt/k3s-root/bin/ /bin/
 COPY --from=build-k8s /usr/local/bin/ /usr/local/bin/
+COPY --from=k3s-root /opt/k3s-root/usr/sbin /usr/sbin/
+COPY --from=k3s-root /opt/k3s-root/bin /bin/
