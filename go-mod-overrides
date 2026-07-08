@@ -1,0 +1,20 @@
+# go-mod-overrides
+#
+# Tracks go.mod overrides applied on top of the upstream module to keep this
+# image CVE-free, even when upstream has not yet bumped the affected dependency.
+# Each non-comment line is passed verbatim to `go mod edit` at build time by the
+# shared scripts/go-mod-overrides.sh that ships in rancher/hardened-build-base.
+# Reference a CVE/advisory per entry so we know when it can be dropped (i.e. once
+# upstream catches up).
+#
+# Supported (anything `go mod edit` accepts), e.g.:
+#   -replace <old>[=<new>][@<version>]
+#   -require <path>@<version>
+#   -exclude <path>@<version>
+#   -dropreplace <path>[@<version>]
+
+# golang.org/x/net — pin to a patched release until upstream bumps it.
+#   CVE-2026-33814 — net/http2 DoS via malformed SETTINGS_MAX_FRAME_SIZE (fixed in v0.53.0)
+#   CVE-2026-39821 — x/net/idna Punycode privilege escalation           (fixed in v0.55.0)
+# Drop once upstream requires golang.org/x/net >= v0.55.0.
+-replace golang.org/x/net=golang.org/x/net@v0.55.0

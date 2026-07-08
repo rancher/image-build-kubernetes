@@ -28,6 +28,9 @@ RUN echo $(/semver-parse.sh ${TAG} all)
 RUN git clone -b $(/semver-parse.sh ${TAG} all) --depth=1 -- https://github.com/kubernetes/kubernetes.git ${GOPATH}/src/kubernetes
 WORKDIR ${GOPATH}/src/kubernetes
 
+COPY go-mod-overrides ./go-mod-overrides
+RUN go-mod-overrides.sh ./go-mod-overrides
+
 # force code generation
 RUN make WHAT=cmd/kube-apiserver
 # build statically linked executables 
