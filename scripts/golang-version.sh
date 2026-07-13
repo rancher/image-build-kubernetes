@@ -21,26 +21,31 @@ if [[ "${GO_VERSION}" != "1."* ]]; then
   exit 1
 fi
 
-BASE_URL='https://hub.docker.com/v2/repositories/rancher/hardened-build-base/tags'
+
+GO_MINOR=$(echo "${GO_VERSION}" | cut -d. -f1,2)
+BASE_URL='https://hub.docker.com/v2/repositories/rancher/hardened-build-base/tags?page_size=100'
 NEXT_URL=$BASE_URL
 MAX_PAGE=10
 PAGE=0
-TAG=""
+ALL_TAGS=""
 
 while [ -n "${NEXT_URL}" ] && [ $PAGE -lt $MAX_PAGE ]; do
   RESPONSE=$(curl -s "$NEXT_URL")
   NEXT_URL=$(echo "$RESPONSE" | yq -r '.next // ""')
   TAGS=$(echo "$RESPONSE" | yq -r '.results[].name')
-  TAG=$(echo "${TAGS}" | grep "${GO_VERSION}b[0-9+]$" | head -n 1)
-  if [ -n "$TAG" ]; then
-    break
-  fi
+
+  ALL_TAGS="${ALL_TAGS}
+${TAGS}"
   
   PAGE=$((PAGE + 1))
 done
 
+# Collect every tag for this Go minor across all pages, then take the highest
+# patch/build (sort -V understands "1.26.4b1" < "1.26.10b1" style ordering).
+TAG=$(echo "${ALL_TAGS}" | grep -E "^v?${GO_MINOR}\.[0-9]+b[0-9]+$" | sort -V | tail -n 1)
+
 if [ -z "${TAG}" ]; then
-  echo "No hardened-build-base tag found for Go ${GO_VERSION}"
+  echo "No hardened-build-base tag found for Go minor ${GO_MINOR}"
   exit 1
 fi
 
