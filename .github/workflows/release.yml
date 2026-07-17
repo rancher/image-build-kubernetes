@@ -15,7 +15,7 @@ jobs:
     runs-on: runs-on,runner=8cpu-linux-x64,run-id=${{ github.run_id }},image=ubuntu22-full-x64
     steps:
     - name: Check out code
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
     - name: get the build-args values
       id: get-build-args
@@ -34,7 +34,7 @@ jobs:
           secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials password | PRIME_REGISTRY_PASSWORD
 
     - name: Build and push image
-      uses: rancher/ecm-distro-tools/actions/publish-image@0e1697ecc955e85ec73970b66c8984241fa84a28 # v0.69.0
+      uses: rancher/ecm-distro-tools/actions/publish-image@b558c3371d4a363f131e31a87d5c47dae2bbebe7 # v0.75.1
       with:
         image: hardened-kubernetes
         tag: ${{ github.event.release.tag_name }}
