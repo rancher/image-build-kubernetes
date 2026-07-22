@@ -27,8 +27,13 @@ RUN chmod +x /semver-parse.sh
 RUN echo $(/semver-parse.sh ${TAG} all)
 RUN git clone -b $(/semver-parse.sh ${TAG} all) --depth=1 -- https://github.com/kubernetes/kubernetes.git ${GOPATH}/src/kubernetes
 WORKDIR ${GOPATH}/src/kubernetes
-COPY go-mod-overrides ./go-mod-overrides
-RUN go-mod-overrides.sh ./go-mod-overrides
+# Override google.golang.org/grpc to remediate GHSA-hrxh-6v49-42gf (grpc-go < 1.82.1:
+# xDS RBAC authorization bypass and HTTP/2 Rapid Reset DoS). Applied inline rather than
+# via go-mod-overrides.sh to avoid running `go mod tidy` on the Kubernetes monorepo,
+# whose staging replace directives make tidy unreliable. Re-vendoring keeps the -mod=vendor
+# build consistent. Drop once upstream Kubernetes requires google.golang.org/grpc >= v1.82.1.
+RUN go mod edit -replace google.golang.org/grpc=google.golang.org/grpc@v1.82.1 && \
+    go mod vendor
 
 # force code generation
 RUN make WHAT=cmd/kube-apiserver
