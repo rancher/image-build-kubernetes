@@ -1,0 +1,3 @@
+# google.golang.org/grpc: GHSA-hrxh-6v49-42gf (xDS RBAC auth bypass, HTTP/2 Rapid Reset DoS).
+# Drop once upstream requires google.golang.org/grpc >= v1.82.1.
+-replace google.golang.org/grpc=google.golang.org/grpc@v1.82.1
