@@ -30,10 +30,11 @@ WORKDIR ${GOPATH}/src/kubernetes
 # Override google.golang.org/grpc to remediate GHSA-hrxh-6v49-42gf (grpc-go < 1.82.1:
 # xDS RBAC authorization bypass and HTTP/2 Rapid Reset DoS). Applied inline rather than
 # via go-mod-overrides.sh to avoid running `go mod tidy` on the Kubernetes monorepo,
-# whose staging replace directives make tidy unreliable. Re-vendoring keeps the -mod=vendor
+# whose staging replace directives make tidy unreliable. Kubernetes uses Go workspace
+# mode, so the replace goes in go.work and vendoring uses `go work vendor` to keep the
 # build consistent. Drop once upstream Kubernetes requires google.golang.org/grpc >= v1.82.1.
-RUN go mod edit -replace google.golang.org/grpc=google.golang.org/grpc@v1.82.1 && \
-    go mod vendor
+RUN go work edit -replace google.golang.org/grpc=google.golang.org/grpc@v1.82.1 && \
+    go work vendor
 
 # force code generation
 RUN make WHAT=cmd/kube-apiserver
