@@ -1,5 +1,5 @@
 ARG BCI_IMAGE=registry.suse.com/bci/bci-nano:16.0
-ARG GO_IMAGE=rancher/hardened-build-base:v1.26.4b1
+ARG GO_IMAGE=rancher/hardened-build-base:v1.26.5b2
 
 FROM ${BCI_IMAGE} AS bci
 FROM ${GO_IMAGE} AS build
@@ -27,6 +27,9 @@ RUN chmod +x /semver-parse.sh
 RUN echo $(/semver-parse.sh ${TAG} all)
 RUN git clone -b $(/semver-parse.sh ${TAG} all) --depth=1 -- https://github.com/kubernetes/kubernetes.git ${GOPATH}/src/kubernetes
 WORKDIR ${GOPATH}/src/kubernetes
+# Apply go.mod/go.work overrides (see go-mod-overrides) for GHSA-hrxh-6v49-42gf.
+COPY go-mod-overrides ./go-mod-overrides
+RUN go-mod-overrides.sh ./go-mod-overrides
 
 # force code generation
 RUN make WHAT=cmd/kube-apiserver
