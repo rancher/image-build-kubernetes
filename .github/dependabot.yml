@@ -14,7 +14,8 @@ updates:
       action-deps:
         patterns:
           - "*"
+    ignore:
+      - dependency-name: "*"
         update-types:
-          - "minor"
-          - "major"
+          - "version-update:semver-patch"
 
