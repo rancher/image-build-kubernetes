@@ -17,12 +17,10 @@ sources:
       - trimprefix: "rancher/hardened-build-base:"
       # Trim 'v' prefix to get "1.24.9b1"
       - trimprefix: "v"
-      # This regex captures the major.minor to get "1.24"
-      # but it will be a list that will be handled in the next step
+      # Capture the major.minor (group 1) to get "1.24"
       - findsubmatch:
           pattern: '^([0-9]+\.[0-9]+)'
-      # Select the last element from the list
-      - kind: lastelement
+          captureindex: 1
 
   # Find the latest release matching that minor version
   latest_patch:
@@ -39,10 +37,21 @@ sources:
         draft: false
         prerelease: false
       versionfilter:
-        kind: regex
-        # This searches for tags "v1.24.*"
-        # using the "1.24" value from the 'current_minor' source
-        pattern: 'v{{ source "current_minor" }}\.\S+'
+        kind: regex/semver
+        # 1. Convert 'v1.25.12b1' -> 'v1.25.12-b.1'
+        #    Makes it a valid SemVer pre-release that sorts numerically
+        replaceall:
+          pattern: 'b(\d+)$'
+          replacement: '-b.$1'
+        # 2. Extract versions matching the current minor (e.g. v1.25)
+        regex: '(v{{ source "current_minor" }}\.\d+.*)'
+        # 3. Constraint '~1.25.0-0': >=1.25.0-0 <1.26.0
+        #    The '-0' floor is required so SemVer evaluates pre-releases
+        #    (every build-base tag is a '-b.N' pre-release).
+        pattern: '~{{ source "current_minor" }}.0-0'
+        # Note: regex/semver remaps the result back to the original tag
+        # (e.g. 'v1.25.12b1'), so no transformer is needed to undo the
+        # '-b.' rewrite — the Dockerfile receives the original 'v...bN' form.
 
 targets:
   dockerfile:
