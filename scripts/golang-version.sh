@@ -14,9 +14,9 @@ if [ -z "${K8S_VERSION}" ] || [ "${K8S_VERSION}" == "v.." ]; then
 fi
 
 GO_VERSION_URL="https://raw.githubusercontent.com/kubernetes/kubernetes/${K8S_VERSION}/.go-version"
-GO_VERSION=$(curl -sL "${GO_VERSION_URL}")
+GO_MINOR_VERSION=$(curl -sL "${GO_VERSION_URL}" | cut -d. -f-2)
 
-if [[ "${GO_VERSION}" != "1."* ]]; then
+if [[ "${GO_MINOR_VERSION}" != "1."* ]]; then
   echo "No Go version found for Kubernetes ${K8S_VERSION}"
   exit 1
 fi
@@ -31,7 +31,7 @@ while [ -n "${NEXT_URL}" ] && [ $PAGE -lt $MAX_PAGE ]; do
   RESPONSE=$(curl -s "$NEXT_URL")
   NEXT_URL=$(echo "$RESPONSE" | yq -r '.next // ""')
   TAGS=$(echo "$RESPONSE" | yq -r '.results[].name')
-  TAG=$(echo "${TAGS}" | grep "${GO_VERSION}b[0-9+]$" | head -n 1)
+  TAG=$(echo "${TAGS}" | grep "${GO_MINOR_VERSION}\.[0-9+]b[0-9+]$" | head -n 1)
   if [ -n "$TAG" ]; then
     break
   fi
@@ -40,7 +40,7 @@ while [ -n "${NEXT_URL}" ] && [ $PAGE -lt $MAX_PAGE ]; do
 done
 
 if [ -z "${TAG}" ]; then
-  echo "No hardened-build-base tag found for Go ${GO_VERSION}"
+  echo "No hardened-build-base tag found for Go ${GO_MINOR_VERSION}"
   exit 1
 fi
 

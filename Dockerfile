@@ -1,4 +1,6 @@
 ARG BCI_IMAGE=registry.suse.com/bci/bci-nano:16.0
+# NOTE: This DOES NOT determine the verison of Golang used to build Kubernetes.
+# See scripts/golang-version.sh for the logic used to determine the version used at build time.
 ARG GO_IMAGE=rancher/hardened-build-base:v1.26.7b2
 
 FROM ${BCI_IMAGE} AS bci

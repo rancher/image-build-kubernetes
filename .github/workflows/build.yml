@@ -20,6 +20,12 @@ jobs:
       id: get-TAG
       run: |
         echo "$(make -s log | grep TAG)" >> "$GITHUB_ENV"
+
+    - name: Set the GO_IMAGE value
+      id: get-GO_IMAGE
+      run: |
+        echo GO_IMAGE=rancher/hardened-build-base:$(./scripts/golang-version.sh ${{ env.TAG }}) >> "$GITHUB_ENV"
+
     - name: Build container image
       uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
       with:
@@ -29,6 +35,7 @@ jobs:
         file: Dockerfile
         build-args: |
           TAG=${{ env.TAG }}
+          GO_IMAGE=${{ env.GO_IMAGE }}
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
@@ -62,6 +69,12 @@ jobs:
       id: get-TAG
       run: |
         echo "$(make -s log | grep TAG)" >> "$GITHUB_ENV"
+
+    - name: Set the GO_IMAGE value
+      id: get-GO_IMAGE
+      run: |
+        echo GO_IMAGE=rancher/hardened-build-base:$(./scripts/golang-version.sh ${{ env.TAG }}) >> "$GITHUB_ENV"
+
     - name: Build container image
       uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
       with:
@@ -73,3 +86,5 @@ jobs:
         platforms: linux/arm64
         build-args: |
           TAG=${{ env.TAG }}
+          GO_IMAGE=${{ env.GO_IMAGE }}
+
