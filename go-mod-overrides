@@ -5,3 +5,9 @@
 # google.golang.org/grpc: CVE-2026-84304, CVE-2026-84445 (HIGH), CVE-2026-84303 (MEDIUM); bump to v1.83.2.
 # Drop once upstream requires google.golang.org/grpc >= v1.83.2.
 -replace google.golang.org/grpc=google.golang.org/grpc@v1.83.2
+
+# golang.org/x/crypto: CVE-2026-56855, CVE-2026-78662 (SSH channel DoS). govulncheck confirms
+# the vulnerable ssh symbols (ssh.Dial, ssh.NewClientConn) are reachable in the kube binaries,
+# so this is not suppressible via VEX. Requires a go1.26 build base (already v1.26.7b2).
+# Drop once upstream Kubernetes requires golang.org/x/crypto >= v0.56.0.
+-replace golang.org/x/crypto=golang.org/x/crypto@v0.56.0
