@@ -2,6 +2,6 @@
 # Drop once upstream Kubernetes requires golang.org/x/net >= v0.56.0.
 -replace golang.org/x/net=golang.org/x/net@v0.56.0
 
-# google.golang.org/grpc: GHSA-hrxh-6v49-42gf (xDS RBAC authorization bypass, HTTP/2 Rapid Reset DoS).
-# Drop once upstream Kubernetes requires google.golang.org/grpc >= v1.82.1.
--replace google.golang.org/grpc=google.golang.org/grpc@v1.82.1
+# google.golang.org/grpc: GHSA-hrxh-6v49-42gf (xDS RBAC authorization bypass, HTTP/2 Rapid Reset DoS), CVE-2026-84304 (data race on stream context).
+# Drop once upstream Kubernetes requires google.golang.org/grpc >= v1.83.1.
+-replace google.golang.org/grpc=google.golang.org/grpc@v1.83.1
