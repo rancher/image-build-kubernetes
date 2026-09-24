@@ -5,3 +5,6 @@
 # google.golang.org/grpc: CVE-2026-84304, CVE-2026-84445 (HIGH), CVE-2026-84303 (MEDIUM); bump to v1.83.2.
 # Drop once upstream requires google.golang.org/grpc >= v1.83.2.
 -replace google.golang.org/grpc=google.golang.org/grpc@v1.83.2
+
+# We need to maintain the fork for the cadvisor support in 1.37+ for different containerd path
+-replace github.com/google/cadvisor/lib=github.com/k3s-io/cadvisor/lib@v0.60.5-k3s1
