@@ -1,6 +1,8 @@
-# google.golang.org/grpc: CVE-2026-84304, CVE-2026-84445 (HIGH), CVE-2026-84303 (MEDIUM); bump to v1.83.2.
-# Drop once upstream requires google.golang.org/grpc >= v1.83.2.
--replace google.golang.org/grpc=google.golang.org/grpc@v1.83.2
-
-# We need to maintain the fork for the cadvisor support in 1.37+ for different containerd path
--replace github.com/google/cadvisor/lib=github.com/k3s-io/cadvisor/lib@v0.60.5-k3s1
+# Applied on top of go-mod-overrides, only when building Kubernetes v1.33.x.
+#
+# go.opentelemetry.io/contrib/.../otelgrpc: Kubernetes 1.33 still calls otelgrpc.UnaryClientInterceptor and
+# otelgrpc.StreamClientInterceptor (apiserver storagebackend/factory/etcd3.go). Those were removed in otelgrpc
+# v0.61.0 and v0.63.0. The grpc v1.83.2 override pulls in cloud.google.com/go/auth v0.18.2, which requires
+# otelgrpc >= v0.61.0, so module resolution moves past the version 1.33 needs. Hold it at the upstream 1.33 pin.
+# This change is exclusive for 1.33, drop this once 1.33 is no longer built.
+-replace go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc=go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc@v0.58.0
