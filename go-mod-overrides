@@ -4,3 +4,7 @@
 
 # We need to maintain the fork for the cadvisor support in 1.37+ for different containerd path
 -replace github.com/google/cadvisor/lib=github.com/k3s-io/cadvisor/lib@v0.60.5-k3s1
+
+# golang.org/x/net: CVE-2026-97032, CVE-2026-78659, CVE-2026-78663, CVE-2026-78669.
+# Drop once upstream runc requires golang.org/x/net >= v0.60.0.
+-replace golang.org/x/net=golang.org/x/net@v0.60.0
