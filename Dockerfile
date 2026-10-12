@@ -75,7 +75,7 @@ RUN kube-proxy --version
 
 FROM ${GO_IMAGE} AS k3s-root
 ARG TARGETARCH
-ARG K3S_ROOT_VERSION=v0.15.2
+ARG K3S_ROOT_VERSION=v0.15.3
 ADD https://github.com/k3s-io/k3s-root/releases/download/${K3S_ROOT_VERSION}/k3s-root-${TARGETARCH}.tar /opt/k3s-root/k3s-root.tar
 RUN tar xvf /opt/k3s-root/k3s-root.tar -C /opt/k3s-root \
  && mkdir -p /opt/k3s-root/usr \
